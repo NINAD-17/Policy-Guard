@@ -1,13 +1,9 @@
 import { betterAuth } from "better-auth";
 import { mongodbAdapter } from "better-auth/adapters/mongodb";
-import { clientPromise } from "./db";
-
-const client = await clientPromise;
+import { client } from "./db";
 
 export const auth = betterAuth({
-    database: mongodbAdapter(client.db(), {
-        client
-    }),
+    database: mongodbAdapter(client.db(), { client }),
     emailAndPassword: {
         enabled: true,
     },
@@ -17,7 +13,7 @@ export const auth = betterAuth({
                 type: "string",
                 required: false,
                 defaultValue: "employee",
-                input: true, // allow setting on signup (used by seed script)
+                input: true,
             },
             department: {
                 type: "string",

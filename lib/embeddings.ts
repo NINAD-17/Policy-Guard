@@ -3,7 +3,7 @@ import { GoogleGenerativeAIEmbeddings } from "@langchain/google-genai";
 // LangChain defaults to GOOGLE_API_KEY, but our env uses GOOGLE_GENERATIVE_AI_API_KEY
 const embeddings = new GoogleGenerativeAIEmbeddings({
     apiKey: process.env.GOOGLE_GENERATIVE_AI_API_KEY,
-    modelName: "text-embedding-004",
+    model: "gemini-embedding-001",
 });
 
 /** Generate embedding vector for a single text string */

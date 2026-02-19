@@ -47,10 +47,10 @@ export const processDocument = inngest.createFunction(
 
             try {
                 const loader = new PDFLoader(tempPath);
-                
+
                 // loader.load() returns one Document per page: [{ pageContent: "...", metadata: { page: 0 } }]
                 const docs = await loader.load();
-                
+
                 // Extract just the text from each page and join with double newlines (["page 1 text", "page 2 text"] → "page 1 text\n\npage 2 text")
                 return docs.map((doc) => doc.pageContent).join("\n\n");
             } finally {
@@ -58,6 +58,18 @@ export const processDocument = inngest.createFunction(
                 await unlink(tempPath).catch(() => { });
             }
         });
+
+        // Guard: if PDF had no extractable text, mark as failed and stop
+        if (!rawText || rawText.trim().length === 0) {
+            await step.run("mark-failed", async () => {
+                const client = await clientPromise;
+                await client.db().collection(COLLECTIONS.SOP_DOCUMENTS).updateOne(
+                    { _id: new ObjectId(documentId) },
+                    { $set: { status: "failed", updatedAt: new Date() } }
+                );
+            });
+            return { documentId, error: "No extractable text found in PDF" };
+        }
 
         // Step 3: Split into chunks
         const chunks = await step.run("split-chunks", async () => {
@@ -75,6 +87,8 @@ export const processDocument = inngest.createFunction(
 
         // Step 5: Store chunks in MongoDB
         await step.run("store-chunks", async () => {
+            if (chunks.length === 0) return; // skip if no chunks
+
             const client = await clientPromise;
             const db = client.db();
 

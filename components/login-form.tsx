@@ -39,11 +39,13 @@ export function LoginForm() {
                 return;
             }
 
-            // Fetch session to determine role for redirect
-            const res = await fetch("/api/auth/get-session");
-            const session = await res.json();
+            // Use the session data from signIn response for role-based redirect
+            // better-auth's signIn return type doesn't include additionalFields,
+            // but the runtime data does contain them
+            const user = result.data?.user as { role?: string } | undefined;
+            const role = user?.role;
 
-            if (session?.user?.role === "admin") {
+            if (role === "admin") {
                 router.push("/admin");
             } else {
                 router.push("/dashboard");

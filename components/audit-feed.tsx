@@ -1,7 +1,6 @@
 "use client";
 
 import { useRef, useEffect } from "react";
-import { ScrollArea } from "@/components/ui/scroll-area";
 import { Skeleton } from "@/components/ui/skeleton";
 import { AuditCard } from "@/components/audit-card";
 import { ShieldCheck } from "lucide-react";
@@ -49,7 +48,7 @@ export function AuditFeed({ logs, loading, processing }: AuditFeedProps) {
     }
 
     return (
-        <ScrollArea className="flex-1">
+        <div className="flex-1 min-h-0 overflow-y-auto">
             <div className="p-6 space-y-8">
                 {logs.length === 0 && !processing ? (
                     <div className="flex flex-col items-center justify-center h-[50vh] text-center">
@@ -89,6 +88,6 @@ export function AuditFeed({ logs, loading, processing }: AuditFeedProps) {
 
                 <div ref={bottomRef} />
             </div>
-        </ScrollArea>
+        </div>
     );
 }

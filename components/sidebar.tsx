@@ -5,6 +5,7 @@ import { useRouter } from "next/navigation";
 import { signOut, useSession } from "@/lib/auth-client";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
+import { Avatar, AvatarFallback } from "@/components/ui/avatar";
 import { ScrollArea } from "@/components/ui/scroll-area";
 import { Separator } from "@/components/ui/separator";
 import { Skeleton } from "@/components/ui/skeleton";
@@ -102,20 +103,6 @@ export function Sidebar() {
 
             <Separator />
 
-            {/* User info */}
-            <div className="p-4">
-                <p className="text-sm font-medium truncate">
-                    {session?.user?.name || "Employee"}
-                </p>
-                <div className="flex items-center gap-2 mt-1">
-                    <Badge variant="secondary" className="text-xs">
-                        {session?.user?.department || "—"}
-                    </Badge>
-                </div>
-            </div>
-
-            <Separator />
-
             {/* Documents */}
             <div className="p-4 pb-2">
                 <h3 className="text-xs font-semibold text-muted-foreground uppercase tracking-wider">
@@ -153,17 +140,32 @@ export function Sidebar() {
                 )}
             </ScrollArea>
 
-            {/* Logout */}
-            <div className="p-3 mt-auto border-t border-border">
-                <Button
-                    variant="ghost"
-                    size="sm"
-                    className="w-full justify-start"
-                    onClick={handleLogout}
-                >
-                    <LogOut className="h-4 w-4 mr-2" />
-                    Logout
-                </Button>
+            {/* Profile + Logout */}
+            <div className="mt-auto border-t border-border p-3 space-y-3">
+                <div className="flex items-center gap-3 px-1">
+                    <Avatar className="h-9 w-9 shrink-0">
+                        <AvatarFallback className="bg-primary/15 text-primary text-sm font-semibold">
+                            {(session?.user?.name || "U").charAt(0).toUpperCase()}
+                        </AvatarFallback>
+                    </Avatar>
+                    <div className="flex-1 min-w-0">
+                        <p className="text-sm font-medium truncate">
+                            {session?.user?.name || "Employee"}
+                        </p>
+                        <Badge variant="secondary" className="text-[10px] px-1.5 py-0">
+                            {session?.user?.department || "—"}
+                        </Badge>
+                    </div>
+                    <Button
+                        variant="ghost"
+                        size="icon"
+                        className="h-8 w-8 shrink-0 text-muted-foreground hover:text-foreground"
+                        onClick={handleLogout}
+                        title="Logout"
+                    >
+                        <LogOut className="h-4 w-4" />
+                    </Button>
+                </div>
             </div>
         </div>
     );

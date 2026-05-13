@@ -27,6 +27,7 @@ export async function POST(request: NextRequest) {
             name: "audit/query.submitted",
             data: {
                 employeeId: session.user.id,
+                employeeName: session.user.name,
                 department: session.user.department,
                 query: parsed.data.query,
                 text: parsed.data.text,

@@ -69,15 +69,40 @@ export interface SOPChunk {
 // ── Audit Log ───────────────────────────────────────────────────────────────
 // Each entry = one query + AI response pair, shown as a scrollable chat
 
+// A single finding from the audit (e.g. "Limited Scope of Review")
+export interface AuditFinding {
+    title: string;
+    description: string;
+    status: "compliant" | "non_compliant";
+    sopReferences: number[]; // indices into sourcesUsed array
+}
+
+// A source document referenced in the audit report
+export interface AuditSource {
+    index: number;           // 1-based reference number used in findings
+    documentTitle: string;
+    documentId: string;      // MongoDB ObjectId string — used to fetch presigned URL
+}
+
+// The structured audit report (new format)
+export interface AuditReportStructured {
+    summary: string;
+    findings: AuditFinding[];
+    recommendations: string[];
+}
+
 export interface AuditLog {
     _id?: ObjectId;
     employeeId: string;
+    employeeName: string;
     department: string;
     userQuery: string;
     userText: string;
-    auditReport: string;
+    // Union type: old logs are plain string (markdown), new logs are structured JSON
+    auditReport: string | AuditReportStructured;
     confidenceScore: number;
-    sourcesUsed: string[];
+    // Union type: old logs are string[], new logs are AuditSource[]
+    sourcesUsed: string[] | AuditSource[];
     status: "compliant" | "non_compliant" | "needs_review";
     tags: string[];
     escalated: boolean;

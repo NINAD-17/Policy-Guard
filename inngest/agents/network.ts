@@ -17,6 +17,7 @@ export function createComplianceNetwork() {
             if (callCount === 0) {
                 return retrieverAgent;
             }
+            console.log("DEBUG: Retriever Output: ", lastResult?.output, "\n\nVector Search Tool: ", lastResult?.toolCalls, "\n\n")
 
             // Call 1: Auditor compares text vs SOPs
             if (callCount === 1) {

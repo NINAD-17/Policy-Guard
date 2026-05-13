@@ -2,22 +2,11 @@
 
 import { useRef, useEffect } from "react";
 import { Skeleton } from "@/components/ui/skeleton";
-import { AuditCard } from "@/components/audit-card";
+import { AuditCard, type AuditLogEntry } from "@/components/audit-card";
 import { ShieldCheck } from "lucide-react";
 
-interface AuditLog {
-    _id: string;
-    userQuery: string;
-    userText: string;
-    auditReport: string;
-    confidenceScore: number;
-    status: string;
-    tags: string[];
-    createdAt: string;
-}
-
 interface AuditFeedProps {
-    logs: AuditLog[];
+    logs: AuditLogEntry[];
     loading: boolean;
     processing: boolean;
 }

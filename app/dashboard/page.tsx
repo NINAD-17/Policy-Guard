@@ -6,20 +6,10 @@ import { ChatInput } from "@/components/chat-input";
 import { Separator } from "@/components/ui/separator";
 import { ShieldCheck } from "lucide-react";
 import { toast } from "sonner";
-
-interface AuditLog {
-    _id: string;
-    userQuery: string;
-    userText: string;
-    auditReport: string;
-    confidenceScore: number;
-    status: string;
-    tags: string[];
-    createdAt: string;
-}
+import type { AuditLogEntry } from "@/components/audit-card";
 
 export default function DashboardPage() {
-    const [logs, setLogs] = useState<AuditLog[]>([]);
+    const [logs, setLogs] = useState<AuditLogEntry[]>([]);
     const [loading, setLoading] = useState(true);
     const [processing, setProcessing] = useState(false);
     const pollRef = useRef<NodeJS.Timeout | null>(null);

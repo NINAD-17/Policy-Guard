@@ -2,6 +2,7 @@ import { inngest } from "../client";
 import { clientPromise } from "@/lib/db";
 import { downloadFromS3 } from "@/lib/s3";
 import { generateEmbeddings } from "@/lib/embeddings";
+import { insertSOPChunks, updateSOPDocument } from "@/db/sops";
 import { COLLECTIONS } from "@/lib/types";
 import type { SOPChunk } from "@/lib/types";
 import { PDFLoader } from "@langchain/community/document_loaders/fs/pdf";
@@ -37,82 +38,70 @@ export const processDocument = inngest.createFunction(
             return buffer.toString("base64"); // serialize for step output
         });
 
-        // Step 2: Extract text from PDF
-        const rawText = await step.run("extract-text", async () => {
-            const buffer = Buffer.from(pdfBuffer, "base64"); // Convert the base64 string back to raw bytes
-
-            // PDFLoader (fs) expects a file path, so write buffer to a temp file
+        // Step 2: Extract text and split into chunks
+        const chunks = await step.run("extract-and-split", async () => {
+            const buffer = Buffer.from(pdfBuffer, "base64");
             const tempPath = join(tmpdir(), `sop-${documentId}-${Date.now()}.pdf`);
             await writeFile(tempPath, buffer);
 
             try {
                 const loader = new PDFLoader(tempPath);
-
-                // loader.load() returns one Document per page: [{ pageContent: "...", metadata: { page: 0 } }]
+                // docs will have { pageContent: string, metadata: { loc: { pageNumber: 1 }, ... } }
                 const docs = await loader.load();
 
-                // Extract just the text from each page and join with double newlines (["page 1 text", "page 2 text"] → "page 1 text\n\npage 2 text")
-                return docs.map((doc) => doc.pageContent).join("\n\n");
+                // Guard: if PDF had no extractable text, return empty
+                if (!docs || docs.length === 0 || !docs.some(d => d.pageContent.trim().length > 0)) {
+                    return [];
+                }
+
+                // Split documents while preserving metadata
+                const splitter = new RecursiveCharacterTextSplitter({
+                    chunkSize: 1000,
+                    chunkOverlap: 200,
+                });
+                const splitDocs = await splitter.splitDocuments(docs);
+                
+                // Return serializable array
+                return splitDocs.map(doc => ({
+                    pageContent: doc.pageContent,
+                    pageNumber: doc.metadata?.loc?.pageNumber || doc.metadata?.page || 1, // langchain PDFLoader puts it in loc.pageNumber (1-indexed)
+                }));
             } finally {
-                // Clean up temp file whether extraction succeeds or fails
                 await unlink(tempPath).catch(() => { });
             }
         });
 
         // Guard: if PDF had no extractable text, mark as failed and stop
-        if (!rawText || rawText.trim().length === 0) {
+        if (!chunks || chunks.length === 0) {
             await step.run("mark-failed", async () => {
-                const client = await clientPromise;
-                await client.db().collection(COLLECTIONS.SOP_DOCUMENTS).updateOne(
-                    { _id: new ObjectId(documentId) },
-                    { $set: { status: "failed", updatedAt: new Date() } }
-                );
+                await updateSOPDocument(documentId, { status: "failed", updatedAt: new Date() });
             });
             return { documentId, error: "No extractable text found in PDF" };
         }
 
-        // Step 3: Split into chunks
-        const chunks = await step.run("split-chunks", async () => {
-            const splitter = new RecursiveCharacterTextSplitter({
-                chunkSize: 1000,
-                chunkOverlap: 200,
-            });
-            return splitter.splitText(rawText);
-        });
-
-        // Step 4: Generate embeddings (batch - langchain handles it)
+        // Step 3: Generate embeddings (batch - langchain handles it)
         const embeddings = await step.run("generate-embeddings", async () => {
-            return generateEmbeddings(chunks);
+            return generateEmbeddings(chunks.map(c => c.pageContent));
         });
 
-        // Step 5: Store chunks in MongoDB
+        // Step 4: Store chunks in MongoDB
         await step.run("store-chunks", async () => {
-            if (chunks.length === 0) return; // skip if no chunks
-
-            const client = await clientPromise;
-            const db = client.db();
-
-            const sopChunks: SOPChunk[] = chunks.map((content, index) => ({
+            const sopChunks: Omit<SOPChunk, "_id">[] = chunks.map((chunk, index) => ({
                 documentId: new ObjectId(documentId),
-                content,
+                content: chunk.pageContent,
                 chunkIndex: index,
+                pageNumber: chunk.pageNumber,
                 embedding: embeddings[index],
                 scope,
                 departments,
             }));
 
-            await db.collection(COLLECTIONS.SOP_CHUNKS).insertMany(sopChunks);
+            await insertSOPChunks(sopChunks);
         });
 
-        // Step 6: Mark document as active
+        // Step 5: Mark document as active
         await step.run("activate-document", async () => {
-            const client = await clientPromise;
-            const db = client.db();
-
-            await db.collection(COLLECTIONS.SOP_DOCUMENTS).updateOne(
-                { _id: new ObjectId(documentId) },
-                { $set: { status: "active", updatedAt: new Date() } }
-            );
+            await updateSOPDocument(documentId, { status: "active", updatedAt: new Date() });
         });
 
         return {

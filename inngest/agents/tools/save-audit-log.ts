@@ -1,6 +1,8 @@
 import { createTool } from "@inngest/agent-kit";
 import { z } from "zod";
 import { clientPromise } from "@/lib/db";
+import { createAuditLog } from "@/db/audits";
+import { getUserProfile } from "@/db/users";
 import { COLLECTIONS } from "@/lib/types";
 import type { AuditLog, AuditReportStructured, AuditSource } from "@/lib/types";
 
@@ -39,9 +41,11 @@ export const saveAuditLogTool = createTool({
         tags: z
             .array(z.string())
             .describe("Topic tags for this audit (e.g. 'code-review', 'safety')"),
+        escalated: z.boolean().optional(),
+        escalationMessage: z.string().optional(),
     }),
     handler: async (
-        { summary, overallStatus, confidenceScore, findings, recommendations, tags },
+        { summary, overallStatus, confidenceScore, findings, recommendations, tags, escalated, escalationMessage },
         { network }
     ) => {
         const state = network?.state.data;
@@ -57,6 +61,25 @@ export const saveAuditLogTool = createTool({
         const sourcesUsed: AuditSource[] =
             (state?.sourceDocuments as AuditSource[]) || [];
 
+        // Look up manager info if escalated
+        let escalatedToId: string | undefined = undefined;
+        let escalatedToName: string | undefined = undefined;
+
+        if (escalated) {
+            const userProfile = await getUserProfile(state?.employeeId as string);
+            if (userProfile && userProfile.escalationManagerId) {
+                escalatedToId = userProfile.escalationManagerId;
+                
+                // Fetch manager's Better Auth user to get their name
+                const client = await clientPromise;
+                const db = client.db();
+                const managerUser = await db.collection("user").findOne({ id: escalatedToId });
+                if (managerUser) {
+                    escalatedToName = managerUser.name as string;
+                }
+            }
+        }
+
         const auditLogEntry: AuditLog = {
             employeeId: state?.employeeId as string,
             employeeName: state?.employeeName as string,
@@ -68,16 +91,15 @@ export const saveAuditLogTool = createTool({
             sourcesUsed,
             status: overallStatus,
             tags,
-            escalated: false,
+            escalated: escalated || false,
+            escalatedToId,
+            escalatedToName,
+            escalationMessage,
             createdAt: new Date(),
         };
 
-        const client = await clientPromise;
-        const db = client.db();
-        const result = await db
-            .collection(COLLECTIONS.AUDIT_LOGS)
-            .insertOne(auditLogEntry);
+        const insertedId = await createAuditLog(auditLogEntry);
 
-        return `Audit log saved successfully with ID: ${result.insertedId}`;
+        return `Audit log saved successfully with ID: ${insertedId}`;
     },
 });

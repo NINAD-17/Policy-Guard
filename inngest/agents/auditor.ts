@@ -51,7 +51,9 @@ OUTPUT FORMAT — respond with ONLY this JSON structure, no markdown, no code fe
   "recommendations": [
     "Actionable, supportive recommendation addressing ${firstName} directly"
   ],
-  "tags": ["tag1", "tag2"]
+  "tags": ["tag1", "tag2"],
+  "escalated": true or false,
+  "escalationMessage": "If escalated is true, draft a polite, constructive message that the employee could send to their manager about needing help with this compliance issue. Address it to 'Manager'. Leave empty if false."
 }
 
 GUARDRAILS:

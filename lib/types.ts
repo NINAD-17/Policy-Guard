@@ -1,21 +1,15 @@
 import { ObjectId } from "mongodb";
 import { z } from "zod";
 
-// ── Employee ────────────────────────────────────────────────────────────────
-// Stored in better-auth's "user" collection.
-// better-auth manages: id, name, email, emailVerified, image, createdAt, updatedAt
-// Custom fields added via additionalFields: role, department, level, jobTitle
+// ── User Profile ────────────────────────────────────────────────────────────
+// Stored in custom "user_profiles" collection
 
-export interface Employee {
-    id: string;
-    name: string;
-    email: string;
-    emailVerified: boolean;
-    image?: string | null;
-    role: "admin" | "employee";
+export interface UserProfile {
+    _id?: ObjectId;
+    userId: string; // references Better Auth's users.id
+    role: "admin" | "employee" | "manager";
     department: string;
-    level: "L1" | "L2" | "L3" | "specialist";
-    jobTitle: string;
+    escalationManagerId?: string; // userId of their manager
     createdAt: Date;
     updatedAt: Date;
 }
@@ -29,9 +23,6 @@ export const DEPARTMENTS = [
 
 export type Department = (typeof DEPARTMENTS)[number];
 
-export const LEVELS = ["L1", "L2", "L3", "specialist"] as const; // 'as const' - array is 'Read Only' and values will never change
-export type Level = (typeof LEVELS)[number];
-
 // ── SOP Document ────────────────────────────────────────────────────────────
 
 export interface SOPDocument {
@@ -39,9 +30,10 @@ export interface SOPDocument {
     title: string;
     description: string;
     s3Key: string;
+    thumbnailUrl?: string; // S3 URL for the first page thumbnail
     scope: "global" | "department-specific";
     departments: string[];
-    status: "processing" | "active" | "archived";
+    status: "processing" | "active" | "archived" | "failed";
     uploadedBy: string;
     createdAt: Date;
     updatedAt: Date;
@@ -61,6 +53,7 @@ export interface SOPChunk {
     documentId: ObjectId;
     content: string;
     chunkIndex: number;
+    pageNumber?: number; // Crucial for PDF citation proof
     embedding: number[];
     scope: "global" | "department-specific"; // denormalized from parent doc
     departments: string[];
@@ -82,6 +75,7 @@ export interface AuditSource {
     index: number;           // 1-based reference number used in findings
     documentTitle: string;
     documentId: string;      // MongoDB ObjectId string — used to fetch presigned URL
+    pageNumber?: number;     // The exact page number referenced
 }
 
 // The structured audit report (new format)
@@ -106,6 +100,7 @@ export interface AuditLog {
     status: "compliant" | "non_compliant" | "needs_review";
     tags: string[];
     escalated: boolean;
+    escalatedToId?: string;
     escalatedToName?: string;
     escalatedToEmail?: string;
     escalationMessage?: string;
@@ -120,7 +115,9 @@ export const chatInputSchema = z.object({
 // ── Collection Names ────────────────────────────────────────────────────────
 
 export const COLLECTIONS = {
+    USER_PROFILES: "user_profiles",
     SOP_DOCUMENTS: "sop_documents",
     SOP_CHUNKS: "sop_chunks",
     AUDIT_LOGS: "audit_logs",
 } as const;
+

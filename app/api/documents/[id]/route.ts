@@ -1,8 +1,8 @@
 import { NextRequest, NextResponse } from "next/server";
 import { getSession, requireAdmin } from "@/lib/session";
-import { clientPromise } from "@/lib/db";
 import { deleteFromS3 } from "@/lib/s3";
-import { COLLECTIONS } from "@/lib/types";
+import { getSOPDocument, deleteSOPDocument, deleteSOPChunks } from "@/db/sops";
+import { getUserProfile } from "@/db/users";
 import { ObjectId } from "mongodb";
 
 interface RouteParams {
@@ -22,22 +22,21 @@ export async function GET(request: NextRequest, { params }: RouteParams) {
             return NextResponse.json({ error: "Invalid document ID" }, { status: 400 });
         }
 
-        const client = await clientPromise;
-        const db = client.db();
-
-        const doc = await db
-            .collection(COLLECTIONS.SOP_DOCUMENTS)
-            .findOne({ _id: new ObjectId(id) });
+        const doc = await getSOPDocument(id);
 
         if (!doc) {
             return NextResponse.json({ error: "Document not found" }, { status: 404 });
         }
 
         // Employees can only access global docs or docs for their department
-        if (session.user.role !== "admin") {
+        const profile = await getUserProfile(session.user.id);
+        const role = profile?.role;
+        const department = profile?.department || "Unknown";
+
+        if (role !== "admin") {
             const canAccess =
                 doc.scope === "global" ||
-                doc.departments?.includes(session.user.department);
+                doc.departments?.includes(department);
 
             if (!canAccess) {
                 return NextResponse.json({ error: "Forbidden" }, { status: 403 });
@@ -64,12 +63,7 @@ export async function DELETE(request: NextRequest, { params }: RouteParams) {
             return NextResponse.json({ error: "Invalid document ID" }, { status: 400 });
         }
 
-        const client = await clientPromise;
-        const db = client.db();
-
-        const doc = await db
-            .collection(COLLECTIONS.SOP_DOCUMENTS)
-            .findOne({ _id: new ObjectId(id) });
+        const doc = await getSOPDocument(id);
 
         if (!doc) {
             return NextResponse.json({ error: "Document not found" }, { status: 404 });
@@ -79,14 +73,10 @@ export async function DELETE(request: NextRequest, { params }: RouteParams) {
         await deleteFromS3(doc.s3Key);
 
         // Delete chunks
-        await db
-            .collection(COLLECTIONS.SOP_CHUNKS)
-            .deleteMany({ documentId: new ObjectId(id) });
+        await deleteSOPChunks(id);
 
         // Delete document
-        await db
-            .collection(COLLECTIONS.SOP_DOCUMENTS)
-            .deleteOne({ _id: new ObjectId(id) });
+        await deleteSOPDocument(id);
 
         return NextResponse.json({ message: "Document deleted" });
     } catch (error) {

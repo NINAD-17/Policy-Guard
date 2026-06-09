@@ -39,11 +39,16 @@ export function LoginForm() {
                 return;
             }
 
-            // Use the session data from signIn response for role-based redirect
-            // better-auth's signIn return type doesn't include additionalFields,
-            // but the runtime data does contain them
-            const user = result.data?.user as { role?: string } | undefined;
-            const role = user?.role;
+            // Fetch profile to get role from the custom user_profiles collection
+            const profileRes = await fetch("/api/auth/profile");
+            if (!profileRes.ok) {
+                setError("Failed to load user profile. Please try again.");
+                setLoading(false);
+                return;
+            }
+
+            const profile = await profileRes.json();
+            const role = profile.role;
 
             if (role === "admin") {
                 router.push("/admin");
@@ -52,6 +57,44 @@ export function LoginForm() {
             }
         } catch {
             setError("Something went wrong. Please try again.");
+            setLoading(false);
+        }
+    };
+
+    const handleGuestLogin = async () => {
+        setError("");
+        setLoading(true);
+
+        try {
+            const result = await signIn.email({
+                email: "guest@policypulse.dev",
+                password: "password123",
+            });
+
+            if (result.error) {
+                setError("Guest login failed. Please ensure the database is seeded.");
+                setLoading(false);
+                return;
+            }
+
+            // Fetch profile for guest to route consistently
+            const profileRes = await fetch("/api/auth/profile");
+            if (!profileRes.ok) {
+                setError("Failed to load guest profile.");
+                setLoading(false);
+                return;
+            }
+
+            const profile = await profileRes.json();
+            const role = profile.role;
+
+            if (role === "admin") {
+                router.push("/admin");
+            } else {
+                router.push("/dashboard");
+            }
+        } catch {
+            setError("Something went wrong with guest login.");
             setLoading(false);
         }
     };
@@ -118,6 +161,25 @@ export function LoginForm() {
                             ) : (
                                 "Sign in"
                             )}
+                        </Button>
+                        <div className="relative my-4">
+                            <div className="absolute inset-0 flex items-center">
+                                <span className="w-full border-t border-muted-foreground/20" />
+                            </div>
+                            <div className="relative flex justify-center text-xs uppercase">
+                                <span className="bg-card px-2 text-muted-foreground">
+                                    Or
+                                </span>
+                            </div>
+                        </div>
+                        <Button
+                            type="button"
+                            variant="outline"
+                            className="w-full"
+                            onClick={handleGuestLogin}
+                            disabled={loading}
+                        >
+                            Continue as Guest
                         </Button>
                     </form>
                 </CardContent>

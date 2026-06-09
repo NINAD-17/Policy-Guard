@@ -1,7 +1,7 @@
 import { NextResponse } from "next/server";
 import { requireSession } from "@/lib/session";
-import { clientPromise } from "@/lib/db";
-import { COLLECTIONS } from "@/lib/types";
+import { getSOPDocuments } from "@/db/sops";
+import { getUserProfile } from "@/db/users";
 
 // GET /api/documents — list documents
 // Admin: all documents. Employee: global + own department docs
@@ -9,24 +9,21 @@ export async function GET() {
     try {
         const session = await requireSession();
 
-        const client = await clientPromise;
-        const db = client.db();
+        const profile = await getUserProfile(session.user.id);
+        const role = profile?.role;
 
         let filter = {};
-        if (session.user.role !== "admin") {
+        if (role !== "admin") {
+            // Employees can only see global docs or docs matching their department
             filter = {
                 $or: [
                     { scope: "global" },
-                    { departments: session.user.department },
+                    { departments: profile?.department || "Unknown" },
                 ],
             };
         }
 
-        const documents = await db
-            .collection(COLLECTIONS.SOP_DOCUMENTS)
-            .find(filter)
-            .sort({ createdAt: -1 })
-            .toArray();
+        const documents = await getSOPDocuments(filter);
 
         return NextResponse.json(documents);
     } catch (error) {

@@ -7,32 +7,4 @@ export const auth = betterAuth({
     emailAndPassword: {
         enabled: true,
     },
-    user: {
-        additionalFields: {
-            role: {
-                type: "string",
-                required: false,
-                defaultValue: "employee",
-                input: true,
-            },
-            department: {
-                type: "string",
-                required: false,
-                defaultValue: "",
-                input: true,
-            },
-            level: {
-                type: "string",
-                required: false,
-                defaultValue: "L1",
-                input: true,
-            },
-            jobTitle: {
-                type: "string",
-                required: false,
-                defaultValue: "",
-                input: true,
-            },
-        },
-    },
 });

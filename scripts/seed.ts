@@ -1,153 +1,133 @@
 /**
  * Seed Script — populates the database with 16 employees across 4 departments.
  *
- * Run: `npx tsx --env-file=.env.local scripts/seed.ts` (The --env-file flag tells Node.js to read that file and load the variables before running any code.)
- *
- * Uses better-auth's internal API to create users with properly hashed passwords.
- * Default password for all users: "password123"
+ * Run: `npx tsx --env-file=.env.local scripts/seed.ts`
  */
 
 import { auth } from "../lib/auth";
 import { clientPromise } from "../lib/db";
+import { createUserProfile } from "../db/users";
 
-const SEED_PASSWORD = "password123";
+const SEED_PASSWORD = process.env.SEED_PASSWORD || "password123";
 
 interface SeedEmployee {
     name: string;
     email: string;
-    role: "admin" | "employee";
+    role: "admin" | "employee" | "manager";
     department: string;
-    level: "L1" | "L2" | "L3" | "specialist";
-    jobTitle: string;
+    escalationManagerEmail?: string;
 }
 
 const employees: SeedEmployee[] = [
-    // ── Engineering ───────────────────────────────────────────────────────────
+    // ── Managers ──────────────────────────────────────────────────────────────
+    {
+        name: "Sneha Deshmukh",
+        email: "sneha.deshmukh@policypulse.dev",
+        role: "manager",
+        department: "Engineering",
+    },
+    {
+        name: "Meera Rao",
+        email: "meera.rao@policypulse.dev",
+        role: "manager",
+        department: "QA",
+    },
+    {
+        name: "Kavita Sharma",
+        email: "kavita.sharma@policypulse.dev",
+        role: "manager",
+        department: "HR",
+    },
+    {
+        name: "Pooja Bhatia",
+        email: "pooja.bhatia@policypulse.dev",
+        role: "manager",
+        department: "Data & Analytics",
+    },
+
+    // ── Engineering Employees ──────────────────────────────────────────────────
     {
         name: "Aarav Mehta",
         email: "aarav.mehta@policypulse.dev",
         role: "employee",
         department: "Engineering",
-        level: "L1",
-        jobTitle: "Junior Developer",
+        escalationManagerEmail: "sneha.deshmukh@policypulse.dev",
     },
     {
         name: "Priya Nair",
         email: "priya.nair@policypulse.dev",
         role: "employee",
         department: "Engineering",
-        level: "L1",
-        jobTitle: "Junior Developer",
+        escalationManagerEmail: "sneha.deshmukh@policypulse.dev",
     },
     {
         name: "Rohan Kulkarni",
         email: "rohan.kulkarni@policypulse.dev",
         role: "employee",
         department: "Engineering",
-        level: "L2",
-        jobTitle: "Senior Developer",
-    },
-    {
-        name: "Sneha Deshmukh",
-        email: "sneha.deshmukh@policypulse.dev",
-        role: "employee",
-        department: "Engineering",
-        level: "L3",
-        jobTitle: "Engineering Manager",
+        escalationManagerEmail: "sneha.deshmukh@policypulse.dev",
     },
 
-    // ── QA ────────────────────────────────────────────────────────────────────
+    // ── QA Employees ──────────────────────────────────────────────────────────
     {
         name: "Vikram Joshi",
         email: "vikram.joshi@policypulse.dev",
         role: "employee",
         department: "QA",
-        level: "L1",
-        jobTitle: "Junior QA Engineer",
+        escalationManagerEmail: "meera.rao@policypulse.dev",
     },
     {
         name: "Ananya Iyer",
         email: "ananya.iyer@policypulse.dev",
         role: "employee",
         department: "QA",
-        level: "L1",
-        jobTitle: "Junior QA Engineer",
+        escalationManagerEmail: "meera.rao@policypulse.dev",
     },
     {
         name: "Karan Patil",
         email: "karan.patil@policypulse.dev",
         role: "employee",
         department: "QA",
-        level: "L2",
-        jobTitle: "Senior QA Lead",
-    },
-    {
-        name: "Meera Rao",
-        email: "meera.rao@policypulse.dev",
-        role: "employee",
-        department: "QA",
-        level: "L3",
-        jobTitle: "QA Architect",
+        escalationManagerEmail: "meera.rao@policypulse.dev",
     },
 
-    // ── HR ────────────────────────────────────────────────────────────────────
+    // ── HR Employees ──────────────────────────────────────────────────────────
     {
         name: "Deepak Verma",
         email: "deepak.verma@policypulse.dev",
         role: "employee",
         department: "HR",
-        level: "L1",
-        jobTitle: "HR Associate",
-    },
-    {
-        name: "Kavita Sharma",
-        email: "kavita.sharma@policypulse.dev",
-        role: "employee",
-        department: "HR",
-        level: "L2",
-        jobTitle: "Senior HR Business Partner",
+        escalationManagerEmail: "kavita.sharma@policypulse.dev",
     },
     {
         name: "Rajesh Gupta",
         email: "rajesh.gupta@policypulse.dev",
         role: "employee",
         department: "HR",
-        level: "specialist",
-        jobTitle: "Compliance Officer",
+        escalationManagerEmail: "kavita.sharma@policypulse.dev",
     },
 
-    // ── Data & Analytics ──────────────────────────────────────────────────────
+    // ── Data & Analytics Employees ────────────────────────────────────────────
     {
         name: "Ishaan Reddy",
         email: "ishaan.reddy@policypulse.dev",
         role: "employee",
         department: "Data & Analytics",
-        level: "L1",
-        jobTitle: "Junior Data Analyst",
+        escalationManagerEmail: "pooja.bhatia@policypulse.dev",
     },
     {
         name: "Nisha Agarwal",
         email: "nisha.agarwal@policypulse.dev",
         role: "employee",
         department: "Data & Analytics",
-        level: "L1",
-        jobTitle: "Junior Data Engineer",
+        escalationManagerEmail: "pooja.bhatia@policypulse.dev",
     },
     {
         name: "Amit Thakur",
         email: "amit.thakur@policypulse.dev",
         role: "employee",
         department: "Data & Analytics",
-        level: "L2",
-        jobTitle: "Senior Data Scientist",
-    },
-    {
-        name: "Pooja Bhatia",
-        email: "pooja.bhatia@policypulse.dev",
-        role: "employee",
-        department: "Data & Analytics",
-        level: "L3",
-        jobTitle: "Head of Analytics",
+        escalationManagerEmail: "pooja.bhatia@policypulse.dev",
     },
 
     // ── Admin ─────────────────────────────────────────────────────────────────
@@ -156,8 +136,15 @@ const employees: SeedEmployee[] = [
         email: "admin@policypulse.dev",
         role: "admin",
         department: "Engineering",
-        level: "L3",
-        jobTitle: "Platform Administrator",
+    },
+
+    // ── Guest ─────────────────────────────────────────────────────────────────
+    {
+        name: "Guest User",
+        email: "guest@policypulse.dev",
+        role: "employee",
+        department: "Engineering",
+        escalationManagerEmail: "sneha.deshmukh@policypulse.dev",
     },
 ];
 
@@ -167,24 +154,29 @@ async function seed() {
     let created = 0;
     let skipped = 0;
 
+    // Track created user IDs for linking escalation managers
+    const emailToUserId = new Map<string, string>();
+
+    // Pass 1: Create all users via Better Auth
     for (const emp of employees) {
         try {
-            await auth.api.signUpEmail({
+            const response = await auth.api.signUpEmail({
                 body: {
                     name: emp.name,
                     email: emp.email,
                     password: SEED_PASSWORD,
-                    role: emp.role,
-                    department: emp.department,
-                    level: emp.level,
-                    jobTitle: emp.jobTitle,
                 },
+                asResponse: false
             });
-            console.log(`  ✅ ${emp.name} (${emp.department} / ${emp.level})`);
+
+            // If signup succeeded, store the returned user ID
+            if (response && response.user && response.user.id) {
+                emailToUserId.set(emp.email, response.user.id);
+            }
+            console.log(`  ✅ ${emp.name} (User Account Created)`);
             created++;
         } catch (error: unknown) {
             const message = error instanceof Error ? error.message : String(error);
-
             if (message.includes("already") || message.includes("exists")) {
                 console.log(`  ⏭️  ${emp.name} — already exists`);
                 skipped++;
@@ -194,10 +186,38 @@ async function seed() {
         }
     }
 
+    console.log("\n🔗 Assigning User Profiles...\n");
+
+    // Pass 2: Create User Profiles with Manager References
+    for (const emp of employees) {
+        const userId = emailToUserId.get(emp.email);
+        if (!userId) continue; // Skip if user creation failed or existed beforehand (if existing, we'd need to fetch them. For a clean seed, we assume drop DB first)
+
+        let escalationManagerId: string | undefined = undefined;
+        if (emp.escalationManagerEmail) {
+            escalationManagerId = emailToUserId.get(emp.escalationManagerEmail);
+        }
+
+        try {
+            await createUserProfile({
+                userId,
+                role: emp.role,
+                department: emp.department,
+                escalationManagerId,
+                createdAt: new Date(),
+                updatedAt: new Date(),
+            });
+            console.log(`  ✅ Profile linked: ${emp.name} (${emp.role})`);
+        } catch (error) {
+             console.error(`  ❌ Profile failed for ${emp.name}:`, error);
+        }
+    }
+
     console.log(`\n✅ Done! Created: ${created}, Skipped: ${skipped}`);
     console.log(`\n📋 Credentials (password: ${SEED_PASSWORD})`);
     console.log(`   Admin:   admin@policypulse.dev`);
-    console.log(`   Example: aarav.mehta@policypulse.dev\n`);
+    console.log(`   Manager: sneha.deshmukh@policypulse.dev`);
+    console.log(`   Employee: aarav.mehta@policypulse.dev\n`);
 
     const client = await clientPromise;
     await client.close();
@@ -208,3 +228,4 @@ seed().catch((err) => {
     console.error("Seed failed:", err);
     process.exit(1);
 });
+

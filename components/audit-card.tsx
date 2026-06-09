@@ -36,6 +36,7 @@ interface AuditSource {
     index: number;
     documentTitle: string;
     documentId: string;
+    pageNumber?: number;
 }
 
 interface AuditReportStructured {
@@ -53,6 +54,9 @@ export interface AuditLogEntry {
     sourcesUsed: string[] | AuditSource[];
     status: string;
     tags: string[];
+    escalated?: boolean;
+    escalatedToName?: string;
+    escalationMessage?: string;
     createdAt: string;
 }
 
@@ -336,36 +340,26 @@ export function AuditCard({ log }: AuditCardProps) {
                                             </button>
                                             {sourcesExpanded && (
                                                 <div className="mt-2 space-y-1.5">
-                                                    {/* Deduplicate by documentId */}
-                                                    {Array.from(
-                                                        new Map(
-                                                            log.sourcesUsed.map(
-                                                                (s) => [
-                                                                    s.documentId,
-                                                                    s,
-                                                                ]
-                                                            )
-                                                        ).values()
-                                                    ).map((source) => (
-                                                        <button
-                                                            key={
-                                                                source.documentId
-                                                            }
-                                                            onClick={() =>
-                                                                handleOpenSource(
-                                                                    source.documentId
-                                                                )
-                                                            }
-                                                            className="w-full flex items-center gap-2 px-3 py-2 rounded-md bg-muted/50 hover:bg-muted transition-colors text-left group"
-                                                        >
-                                                            <FileText className="h-4 w-4 text-muted-foreground shrink-0" />
-                                                            <span className="text-xs flex-1 truncate">
-                                                                {
-                                                                    source.documentTitle
+                                                    {log.sourcesUsed.map((source, idx) => (
+                                                        <div key={idx} className="flex flex-col gap-1 w-full bg-muted/50 rounded-md p-2">
+                                                            <button
+                                                                onClick={() =>
+                                                                    handleOpenSource(
+                                                                        source.documentId
+                                                                    )
                                                                 }
-                                                            </span>
-                                                            <ExternalLink className="h-3 w-3 text-muted-foreground opacity-0 group-hover:opacity-100 transition-opacity shrink-0" />
-                                                        </button>
+                                                                className="w-full flex items-center gap-2 text-left group"
+                                                            >
+                                                                <FileText className="h-4 w-4 text-muted-foreground shrink-0" />
+                                                                <span className="text-xs flex-1 truncate font-medium">
+                                                                    {
+                                                                        source.documentTitle
+                                                                    }
+                                                                    {source.pageNumber ? ` (Page ${source.pageNumber})` : ""}
+                                                                </span>
+                                                                <ExternalLink className="h-3 w-3 text-muted-foreground opacity-0 group-hover:opacity-100 transition-opacity shrink-0" />
+                                                            </button>
+                                                        </div>
                                                     ))}
                                                 </div>
                                             )}
@@ -393,6 +387,21 @@ export function AuditCard({ log }: AuditCardProps) {
                                         {tag}
                                     </Badge>
                                 ))}
+                            </div>
+                        )}
+
+                        {/* Escalation Block */}
+                        {log.escalated && (
+                            <div className="mt-4 pt-4 border-t border-red-900/30">
+                                <div className="rounded-md border border-red-900/50 bg-red-950/20 p-3">
+                                    <h4 className="text-sm font-semibold text-red-500 mb-1 flex items-center gap-2">
+                                        <AlertTriangle className="h-4 w-4" />
+                                        Escalated to {log.escalatedToName || "Manager"}
+                                    </h4>
+                                    <p className="text-xs text-muted-foreground italic bg-black/20 p-2 rounded border border-white/5">
+                                        "{log.escalationMessage}"
+                                    </p>
+                                </div>
                             </div>
                         )}
 

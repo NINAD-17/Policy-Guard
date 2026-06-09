@@ -1,9 +1,9 @@
 import { NextRequest, NextResponse } from "next/server";
 import { requireAdmin } from "@/lib/session";
-import { clientPromise } from "@/lib/db";
+import { createSOPDocument } from "@/db/sops";
 import { uploadToS3 } from "@/lib/s3";
 import { inngest } from "@/inngest/client";
-import { COLLECTIONS, sopDocumentSchema } from "@/lib/types";
+import { sopDocumentSchema } from "@/lib/types";
 import type { SOPDocument } from "@/lib/types";
 
 // POST /api/documents/upload — upload PDF + create document + trigger processing
@@ -51,10 +51,7 @@ export async function POST(request: NextRequest) {
         await uploadToS3(s3Key, buffer);
 
         // Create document record in MongoDB
-        const client = await clientPromise;
-        const db = client.db();
-
-        const doc: SOPDocument = {
+        const documentId = await createSOPDocument({
             title: parsed.data.title,
             description: parsed.data.description,
             s3Key,
@@ -64,17 +61,13 @@ export async function POST(request: NextRequest) {
             uploadedBy: session.user.id,
             createdAt: new Date(),
             updatedAt: new Date(),
-        };
-
-        const result = await db
-            .collection(COLLECTIONS.SOP_DOCUMENTS)
-            .insertOne(doc);
+        });
 
         // Trigger Inngest PDF processing pipeline
         await inngest.send({
             name: "sop/document.uploaded",
             data: {
-                documentId: result.insertedId.toString(),
+                documentId,
                 s3Key,
                 scope: parsed.data.scope,
                 departments: parsed.data.departments,
@@ -84,7 +77,7 @@ export async function POST(request: NextRequest) {
         return NextResponse.json(
             {
                 message: "Document uploaded, processing started",
-                documentId: result.insertedId,
+                documentId,
             },
             { status: 201 }
         );

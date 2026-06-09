@@ -25,30 +25,41 @@ interface Document {
     scope: string;
     departments: string[];
     status: string;
+    thumbnailUrl?: string;
 }
 
 export function Sidebar() {
     const router = useRouter();
     const { data: session } = useSession();
+    const [profile, setProfile] = useState<{ department: string } | null>(null);
     const [documents, setDocuments] = useState<Document[]>([]);
     const [loading, setLoading] = useState(true);
     const [collapsed, setCollapsed] = useState(false);
 
     useEffect(() => {
-        async function fetchDocs() {
+        async function fetchData() {
             try {
-                const res = await fetch("/api/documents");
-                if (res.ok) {
-                    const data = await res.json();
+                const [docsRes, profileRes] = await Promise.all([
+                    fetch("/api/documents"),
+                    fetch("/api/auth/profile")
+                ]);
+
+                if (docsRes.ok) {
+                    const data = await docsRes.json();
                     setDocuments(data.filter((d: Document) => d.status === "active"));
                 }
+                
+                if (profileRes.ok) {
+                    const profileData = await profileRes.json();
+                    setProfile(profileData);
+                }
             } catch {
-                console.error("Failed to fetch documents");
+                console.error("Failed to fetch data");
             } finally {
                 setLoading(false);
             }
         }
-        fetchDocs();
+        fetchData();
     }, []);
 
     const handleViewPDF = async (docId: string) => {
@@ -153,7 +164,7 @@ export function Sidebar() {
                             {session?.user?.name || "Employee"}
                         </p>
                         <Badge variant="secondary" className="text-[10px] px-1.5 py-0">
-                            {session?.user?.department || "—"}
+                            {profile?.department || "—"}
                         </Badge>
                     </div>
                     <Button
@@ -170,3 +181,4 @@ export function Sidebar() {
         </div>
     );
 }
+

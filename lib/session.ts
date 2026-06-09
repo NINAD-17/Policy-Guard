@@ -1,5 +1,6 @@
 import { auth } from "@/lib/auth";
 import { headers } from "next/headers";
+import { getUserRole } from "@/db/users";
 
 /**
  * Get the current session from the request.
@@ -31,7 +32,8 @@ export async function requireSession() {
  */
 export async function requireAdmin() {
     const session = await requireSession();
-    if (session.user.role !== "admin") {
+    const role = await getUserRole(session.user.id);
+    if (role !== "admin") {
         throw new Response(JSON.stringify({ error: "Forbidden" }), {
             status: 403,
             headers: { "Content-Type": "application/json" },

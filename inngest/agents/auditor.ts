@@ -1,4 +1,5 @@
 import { createAgent, gemini } from "@inngest/agent-kit";
+import { getEscalationManagerTool } from "./tools/get-escalation-manager";
 
 // Auditor Agent: compares employee's work text against SOP rules and generates report
 export const auditorAgent = createAgent({
@@ -31,10 +32,11 @@ INSTRUCTIONS:
 1. Review the SOP content provided by the Retriever agent (in the conversation history)
 2. Compare the employee's work text against each relevant SOP rule
 3. For each finding, note which source numbers it references (e.g. [1], [3])
-4. Assign a confidence score (0.0 to 1.0) based on how certain you are
-5. Generate topic tags that categorize this audit
+4. If you find non-compliant issues or need review, FIRST call the get_escalation_manager tool to find out who the employee should contact.
+5. Assign a confidence score (0.0 to 1.0) based on how certain you are
+6. Generate topic tags that categorize this audit
 
-OUTPUT FORMAT — respond with ONLY this JSON structure, no markdown, no code fences:
+OUTPUT FORMAT — After using tools if needed, respond with ONLY this JSON structure, no markdown, no code fences:
 
 {
   "summary": "A 2-3 sentence human-friendly summary addressing ${firstName} directly. Explain the overall compliance picture in plain language.",
@@ -53,7 +55,7 @@ OUTPUT FORMAT — respond with ONLY this JSON structure, no markdown, no code fe
   ],
   "tags": ["tag1", "tag2"],
   "escalated": true or false,
-  "escalationMessage": "If escalated is true, draft a polite, constructive message that the employee could send to their manager about needing help with this compliance issue. Address it to 'Manager'. Leave empty if false."
+  "escalationMessage": "If escalated is true, draft a polite, constructive message that the employee could send to their escalation manager (use the name returned by the tool) about needing help with this compliance issue. Address it to 'Manager'. Leave empty if false."
 }
 
 GUARDRAILS:
@@ -67,4 +69,5 @@ GUARDRAILS:
         model: "gemini-2.5-flash",
         apiKey: process.env.GOOGLE_GENERATIVE_AI_API_KEY,
     }),
+    tools: [getEscalationManagerTool],
 });

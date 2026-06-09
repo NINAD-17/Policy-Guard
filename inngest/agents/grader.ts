@@ -11,7 +11,7 @@ export const graderAgent = createAgent({
 
 Your job is to validate the JSON audit report produced by the Auditor agent.
 
-The Auditor outputs a JSON object with: summary, overallStatus, confidenceScore, findings[], recommendations[], tags[].
+The Auditor outputs a JSON object with: summary, overallStatus, confidenceScore, findings[], recommendations[], tags[], escalated, escalationMessage.
 
 VALIDATION CHECKLIST:
 1. Is the output valid JSON? (no markdown fences, no extra text)
@@ -33,6 +33,8 @@ WHEN SAVING — pass these fields directly to save_audit_log:
 - findings: the array of finding objects (each with title, description, status, sopReferences)
 - recommendations: the array of recommendation strings
 - tags: the array of topic tags
+- escalated: boolean indicating if the issue was escalated
+- escalationMessage: the drafted message for the manager, if escalated
 
 IMPORTANT: You MUST call save_audit_log to save approved reports. Do not just describe the report.
 Source documents are automatically handled — do not pass them to save_audit_log.`,

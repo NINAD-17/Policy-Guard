@@ -31,8 +31,11 @@ export const vectorSearchTool = createTool({
         }
 
         // Store source metadata in network state for the Grader to use later
-        const sourceDocuments = results.map((r, i) => ({
-            index: i + 1,
+        const existingSources = (network?.state.data?.sourceDocuments as any[]) || [];
+        const startIndex = existingSources.length;
+
+        const newSourceDocuments = results.map((r, i) => ({
+            index: startIndex + i + 1,
             documentTitle: r.documentTitle as string,
             documentId: (r.documentId as ObjectId).toString(),
             pageNumber: r.pageNumber as number | undefined,
@@ -40,14 +43,14 @@ export const vectorSearchTool = createTool({
 
         // Save to network state so Grader can access it
         if (network?.state.data) {
-            network.state.data.sourceDocuments = sourceDocuments;
+            network.state.data.sourceDocuments = [...existingSources, ...newSourceDocuments];
         }
 
         // Format output with document metadata for the Auditor
         return results
             .map(
                 (r, i) =>
-                    `[Source ${i + 1} | Document: "${r.documentTitle}"${r.pageNumber ? ` (Page ${r.pageNumber})` : ""} | DocID: ${r.documentId}] (score: ${(r.score as number).toFixed(3)})\n${r.content}`
+                    `[Source ${startIndex + i + 1} | Document: "${r.documentTitle}"${r.pageNumber ? ` (Page ${r.pageNumber})` : ""} | DocID: ${r.documentId}] (score: ${(r.score as number).toFixed(3)})\n${r.content}`
             )
             .join("\n\n---\n\n");
     },

@@ -30,10 +30,7 @@ export function createComplianceNetwork() {
             }
 
             // Check if the Grader called save_audit_log (tool call present = done)
-            const lastOutput = lastResult?.output ?? [];
-            const hasToolCall = lastOutput.some(
-                (msg) => msg.type === "tool_call"
-            );
+            const hasToolCall = lastResult?.toolCalls && lastResult.toolCalls.length > 0;
 
             if (hasToolCall) {
                 // Grader saved the report, we're done

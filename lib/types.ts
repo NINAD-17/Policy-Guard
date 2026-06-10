@@ -104,6 +104,8 @@ export interface AuditLog {
     escalatedToName?: string;
     escalatedToEmail?: string;
     escalationMessage?: string;
+    sessionId?: string;
+    isGuest?: boolean;
     createdAt: Date;
 }
 

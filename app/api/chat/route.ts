@@ -37,6 +37,8 @@ export async function POST(request: NextRequest) {
                 department: profile.department,
                 query: parsed.data.query,
                 text: parsed.data.text,
+                sessionId: session.session.id,
+                isGuest: session.user.email === "guest@policypulse.dev",
             },
         });
 

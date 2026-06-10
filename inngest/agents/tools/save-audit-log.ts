@@ -95,6 +95,8 @@ export const saveAuditLogTool = createTool({
             escalatedToId,
             escalatedToName,
             escalationMessage,
+            sessionId: state?.sessionId as string,
+            isGuest: state?.isGuest as boolean,
             createdAt: new Date(),
         };
 

@@ -11,7 +11,7 @@ export const complianceAudit = inngest.createFunction(
     },
     { event: "audit/query.submitted" },
     async ({ event }) => {
-        const { query, text, employeeId, employeeName, department } = event.data;
+        const { query, text, employeeId, employeeName, department, sessionId, isGuest } = event.data;
 
         // DO NOT wrap network.run() in step.run() — AgentKit uses
         // Inngest steps internally. Nesting steps is not supported.
@@ -26,6 +26,8 @@ export const complianceAudit = inngest.createFunction(
                     employeeId,
                     employeeName,
                     department,
+                    sessionId,
+                    isGuest,
                 }),
             }
         );

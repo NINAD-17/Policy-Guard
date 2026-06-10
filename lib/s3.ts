@@ -6,28 +6,42 @@ import {
 } from "@aws-sdk/client-s3";
 import { getSignedUrl } from "@aws-sdk/s3-request-presigner";
 
-if (!process.env.AWS_ACCESS_KEY_ID || !process.env.AWS_SECRET_ACCESS_KEY) {
-    throw new Error("AWS credentials are not defined in environment variables");
+let s3Client: S3Client | null = null;
+
+function getS3Client(): S3Client {
+    if (s3Client) return s3Client;
+
+    if (!process.env.AWS_ACCESS_KEY_ID || !process.env.AWS_SECRET_ACCESS_KEY) {
+        throw new Error("AWS credentials are not defined in environment variables");
+    }
+
+    s3Client = new S3Client({
+        region: process.env.AWS_REGION || "ap-south-1",
+        credentials: {
+            accessKeyId: process.env.AWS_ACCESS_KEY_ID,
+            secretAccessKey: process.env.AWS_SECRET_ACCESS_KEY,
+        },
+    });
+
+    return s3Client;
 }
 
-const s3Client = new S3Client({
-    region: process.env.AWS_REGION || "ap-south-1",
-    credentials: {
-        accessKeyId: process.env.AWS_ACCESS_KEY_ID!,
-        secretAccessKey: process.env.AWS_SECRET_ACCESS_KEY!,
-    },
-});
-
-const BUCKET_NAME = process.env.AWS_S3_BUCKET_NAME!;
+function getBucketName(): string {
+    const bucket = process.env.AWS_S3_BUCKET_NAME;
+    if (!bucket) {
+        throw new Error("AWS_S3_BUCKET_NAME is not defined in environment variables");
+    }
+    return bucket;
+}
 
 export async function uploadToS3(
     key: string,
     body: Buffer,
     contentType: string = "application/pdf"
 ): Promise<string> {
-    await s3Client.send(
+    await getS3Client().send(
         new PutObjectCommand({
-            Bucket: BUCKET_NAME,
+            Bucket: getBucketName(),
             Key: key,
             Body: body,
             ContentType: contentType,
@@ -42,16 +56,16 @@ export async function getPresignedUrl(
     expiresInSeconds: number = 3600
 ): Promise<string> {
     const command = new GetObjectCommand({
-        Bucket: BUCKET_NAME,
+        Bucket: getBucketName(),
         Key: key,
     });
-    return getSignedUrl(s3Client, command, { expiresIn: expiresInSeconds });
+    return getSignedUrl(getS3Client(), command, { expiresIn: expiresInSeconds });
 }
 
 export async function downloadFromS3(key: string): Promise<Buffer> {
-    const response = await s3Client.send(
+    const response = await getS3Client().send(
         new GetObjectCommand({
-            Bucket: BUCKET_NAME,
+            Bucket: getBucketName(),
             Key: key,
         })
     );
@@ -66,9 +80,9 @@ export async function downloadFromS3(key: string): Promise<Buffer> {
 }
 
 export async function deleteFromS3(key: string): Promise<void> {
-    await s3Client.send(
+    await getS3Client().send(
         new DeleteObjectCommand({
-            Bucket: BUCKET_NAME,
+            Bucket: getBucketName(),
             Key: key,
         })
     );

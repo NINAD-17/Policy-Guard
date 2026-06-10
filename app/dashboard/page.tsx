@@ -84,20 +84,18 @@ export default function DashboardPage() {
     };
 
     return (
-        <>
-            {/* Header */}
-            <div className="px-6 h-14 flex items-center gap-2 border-b border-border bg-card shrink-0">
-                <ShieldCheck className="h-5 w-5 text-primary" />
-                <h1 className="text-sm font-semibold">Compliance Audit</h1>
+        <div className="flex-1 flex flex-col w-full h-full relative">
+            {/* Floating Header */}
+
+
+            {/* Audit feed container with padding for floating header and footer */}
+            <div className="flex-1 overflow-y-auto pt-16 relative">
+                <AuditFeed logs={logs} loading={loading} processing={processing} />
+                <div className="h-40 shrink-0 w-full" />
             </div>
 
-            <Separator />
-
-            {/* Audit feed */}
-            <AuditFeed logs={logs} loading={loading} processing={processing} />
-
-            {/* Chat input */}
+            {/* Floating Chat input */}
             <ChatInput onSubmit={handleSubmit} loading={processing} />
-        </>
+        </div>
     );
 }

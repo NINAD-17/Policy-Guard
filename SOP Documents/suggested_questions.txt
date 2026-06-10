@@ -1,0 +1,47 @@
+SUGGESTED COMPLIANCE QUESTIONS FOR POLICYGUARD
+
+Below is a list of relevant questions you can ask the compliance audit platform. These questions are tailored to the active department SOPs and will test compliant, non-compliant, and escalation scenarios.
+
+---
+ENGINEERING QUESTIONS:
+1. "Does my code review process follow the company SOP? I quickly scanned a PR for syntax errors and approved it in 5 minutes without running tests."
+   (Tests: code review duration, depth, and testing rules. Status: Non-compliant)
+
+2. "An API secret key was accidentally pushed to a public GitHub repo on Friday night. We deleted the repo on Sunday but haven't rotated the key yet. Is this okay?"
+   (Tests: Grade-1 security incident response, 1-hour credential rotation window, and weekend handling. Status: Non-compliant, Escalated)
+
+3. "I completed a code review today. I spent 20 minutes inspecting the logic, verified all automated tests passed, and confirmed no API secrets were present. Is this compliant?"
+   (Tests: standard code review compliance. Status: Compliant)
+
+---
+QA QUESTIONS:
+1. "We are releasing a new feature tomorrow. Can we bypass the regression test suite because we are running short on time?"
+   (Tests: QA release testing regression requirement. Status: Non-compliant)
+
+2. "I am setting up a staging environment. Can I import the raw production customer database so we have realistic data to test against?"
+   (Tests: staging data anonymization rule. Status: Non-compliant)
+
+3. "For our staging database, we ran a seed script using randomized fake user records instead of real client files. Is this compliant?"
+   (Tests: DB seeding protocols. Status: Compliant)
+
+---
+HR QUESTIONS:
+1. "I work remotely. I will be offline between 11 AM and 1 PM tomorrow without updating my Slack status. Is this allowed under the remote work policy?"
+   (Tests: core hours accessibility. Status: Non-compliant)
+
+2. "I bought an ergonomic desk chair for my home office and submitted the receipt for a $450 reimbursement 15 days after the purchase. Does this follow HR guidelines?"
+   (Tests: remote work home office expense policy. Status: Compliant)
+
+3. "We have a new hire starting next week. We activated their IT access accounts today even though they haven't uploaded their government IDs yet. Is this compliant?"
+   (Tests: onboarding ID verification rule. Status: Non-compliant)
+
+---
+DATA & ANALYTICS QUESTIONS:
+1. "I exported a dataset of user records containing clear emails and phone numbers for an external audit. Is this compliant with our data protocols?"
+   (Tests: PII anonymization policy. Status: Non-compliant)
+
+2. "We perform incremental backups of our analytical databases every 24 hours at 1:00 AM UTC and encrypt them with AES-256. Does this follow the backup policy?"
+   (Tests: backup frequency and encryption. Status: Compliant)
+
+3. "Can we retain customer chat history logs in our databases for 5 years to help train our internal AI models?"
+   (Tests: chat retention policy which has 1-year limit. Status: Non-compliant)

@@ -1,0 +1,107 @@
+PULSEGUARD TECHNOLOGIES INC. - STANDARD OPERATING PROCEDURE
+================================================================================
+Document ID:     SOP-QA-002
+Title:           TEST AND STAGING ENVIRONMENT MAINTENANCE PROTOCOLS
+Version:         v2.2
+Effective Date:  January 15, 2026
+Review Date:     January 15, 2027
+Department:      Quality Assurance (QA)
+Author:          Diana Patel (QA Director)
+Approver:        Sneha Deshmukh (VP of Engineering)
+Classification:  Internal Restricted
+================================================================================
+
+1. PURPOSE & OBJECTIVE
+   This Standard Operating Procedure (SOP) outlines the mandatory workflows, rules,
+   and procedures for maintaining staging and test environments at PulseGuard. The
+   goal is to maintain absolute environment health, verify data safety, ensure compliance
+   with customer privacy regulations, and prevent staging configuration drifts that 
+   might invalidate pre-release verification metrics.
+
+2. SCOPE
+   This procedure governs the configuration, data setup, cleanup routines, access,
+   and freeze periods of all staging, development, sandbox, and automated testing 
+   environments owned or operated by PulseGuard Technologies Inc. It applies to all 
+   QA, Engineering, DevOps, and Product management staff.
+
+3. ROLES AND RESPONSIBILITIES
+   3.1. Database Administrator (DBA)
+        - Manages database seeding scripts and anonymization engines.
+        - Wipes and restores test databases according to standard schedules.
+   3.2. DevOps Engineer
+        - Provisions staging VM/container clusters.
+        - Resolves environment connectivity issues and resource overflows.
+   3.3. QA Lead
+        - Declares freeze periods and coordinates testing windows.
+        - Approves manual test database updates.
+   3.4. Security Auditor
+        - Audits staging environments to confirm no raw PII exists.
+
+4. DEFINITIONS AND REFERENCES
+   - Database Seeding: The process of populating databases with a standard set of
+     test data before test runs.
+   - Anonymization: The process of scrubbing or replacing personal data (PII) 
+     with randomized parameters to protect customer privacy.
+   - Environment Freeze: A period where staging config updates, package updates,
+     and hotfixes are suspended.
+   - SOP-QA-001: Mandatory Software Release Testing Protocols (reference).
+
+5. STAGING AND TESTING DATA PROTECTION MANDATES
+   Staging and testing databases must strictly follow these rules:
+   5.1. Database Seeding Protocol
+        - Test environments must be seeded using randomized, mock, or fully
+          anonymized datasets.
+        - Under no circumstances should raw, production customer data or files
+          be imported into test/staging databases. This is a severe compliance 
+          and privacy violation.
+   5.2. Anonymization Requirements
+        - In the event that production datasets are needed for troubleshooting,
+          the data must pass through the automated anonymization pipeline 
+          before import. All emails, phones, names, and keys must be scrambled.
+
+6. ENVIRONMENT MAINTENANCE AND CLEANUP SCHEDULING
+   Testing environments must be regularly cleaned to avoid storage overhead:
+   6.1. Weekly Reset Schedule
+        - Every Friday at 6:00 PM UTC, an automated cleanup script must be executed
+          by the orchestrator.
+        - This script is configured to reset staging databases to seed templates
+          and completely wipe all temporary storage directories and test files.
+   6.2. Drifting Verification
+        - Staging config files must be audited weekly against production.
+
+7. COLD DEPLOYMENT AND ENVIRONMENT FREEZE PERIODS
+   To ensure stability before releasing major features, freezes are mandatory:
+   7.1. Freeze Timelines
+        - An environment freeze is declared 48 hours prior to any major public release.
+        - During the freeze period, no database schema edits, API configurations,
+          third-party updates, or hotfixes may be deployed to staging.
+   7.2. Override Procedures
+        - Freeze bypass requests require written sign-off from the QA Director.
+
+8. PROCEDURAL STEP-BY-STEP FLOW
+   Step 1: Staging environment is created or verified.
+   Step 2: Friday 6 PM cleanup runs, resetting the environment to defaults.
+   Step 3: DBA executes the mock seeding script, populating dummy user profiles.
+   Step 4: Testers utilize the clean seeded environment for manual and auto tests.
+   Step 5: 48 hours before release, QA Lead declares the Staging Freeze.
+   Step 6: Release candidate is validated under static staging configurations.
+   Step 7: Deployment to production occurs.
+   Step 8: Freeze is lifted, resuming normal staging modifications.
+
+9. TROUBLESHOOTING & ESCALATION PROCEDURES
+   9.1. Production Data Leaked in Staging
+        - If a user spots raw customer data in staging, they must isolate the DBA
+          server immediately and flag the incident as Grade-1.
+   9.2. Escalation Contact Path
+        - First Level: Department QA Lead (Diana Patel).
+        - Second Level: Sneha Deshmukh (VP of Engineering / Escalation Manager).
+        - DevOps Escalation: devops-alerts@policypulse.dev.
+
+10. REVISION HISTORY LOG
+   -----------------------------------------------------------------------------
+   Version | Date       | Author        | Description of Change
+   -----------------------------------------------------------------------------
+   v1.0    | 2024-06-11 | D. Patel      | Initial staging environment SOP.
+   v2.0    | 2025-01-05 | D. Patel      | Mandated weekly Friday cleanup scripts.
+   v2.2    | 2026-01-15 | D. Patel      | Added strict anonymization rules.
+   -----------------------------------------------------------------------------

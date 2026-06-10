@@ -1,0 +1,106 @@
+PULSEGUARD TECHNOLOGIES INC. - STANDARD OPERATING PROCEDURE
+================================================================================
+Document ID:     SOP-HR-001
+Title:           REMOTE WORK EXPECTATIONS AND PROCEDURES
+Version:         v3.2
+Effective Date:  January 15, 2026
+Review Date:     January 15, 2027
+Department:      Human Resources (HR)
+Author:          Kavita Sharma (HR Director)
+Approver:        Sneha Deshmukh (VP of Engineering / HR Sponsor)
+Classification:  Internal Restricted
+================================================================================
+
+1. PURPOSE & OBJECTIVE
+   This Standard Operating Procedure (SOP) defines remote work expectations, core 
+   working hours, communication parameters, and expense reimbursement processes 
+   for remote employees at PulseGuard. The goal is to maximize employee productivity,
+   ensure business continuity, maintain data security, and facilitate structured 
+   reimbursements.
+
+2. SCOPE
+   This procedure is applicable to all remote-first employees, hybrid workers,
+   and contract staff working off-site within any department of PulseGuard 
+   Technologies Inc. It applies across all geographical work zones.
+
+3. ROLES AND RESPONSIBILITIES
+   3.1. Remote Employee
+        - Remains reachable and responsive during core working hours.
+        - Sets up a private and secure home workspace.
+        - Wears appropriate business attire during video calls.
+   3.2. Team Manager
+        - Conducts daily team check-ins (standups).
+        - Monitors team communication response times.
+        - Approves expense submissions for office upgrades.
+   3.3. HR Coordinator
+        - Audits remote workspace compliance profiles.
+        - Process remote work applications and ergonomic gear requests.
+
+4. DEFINITIONS AND REFERENCES
+   - Core Working Hours: Mandatory daily windows where all remote personnel must
+     be online and responsive.
+   - Slack Latency: The maximum delay permitted for responding to direct text
+     messages during working hours.
+   - SOP-HR-002: Employee Onboarding & Verification (reference document).
+
+5. CORE WORKING HOURS AND AVAILABILITY MANDATES
+   All remote employees must abide by the following operational availability rules:
+   5.1. Daily Core Schedule
+        - All remote employees must be active, online, and accessible during the
+          mandatory collaborative core hours: 10:00 AM to 4:00 PM EST.
+        - Exceptions must be approved in writing by the Team Manager 24 hours in
+          advance, or logged under formal leave policies.
+   5.2. Daily standup Attendance
+        - Attendance at the daily department standup is mandatory. Standup timings 
+          are fixed by the team lead and must occur within core hours.
+   5.3. Communication Latency limits
+        - Response times on direct company messaging tools (Slack, Teams) during
+          core working hours must not exceed 60 minutes.
+        - If an employee is offline or in a meeting, they must update their status 
+          icon and calendar accordingly.
+
+6. SECURE HOME WORKSPACE PROTOCOLS
+   Employees are responsible for ensuring their home office environment is secure:
+   6.1. Private Connection
+        - Remote work must be done over the company-provided VPN.
+        - Open public Wi-Fi networks are strictly forbidden.
+   6.2. Visual Privacy
+        - Monitors displaying customer PII or engineering codebase logs must not
+          be visible to third parties, including family members.
+
+7. ERGONOMIC HOME OFFICE EXPENSE REIMBURSEMENT
+   PulseGuard provides financial support for setting up a healthy remote workspace:
+   7.1. Funding Limits
+        - Remote employees are eligible for up to $500 total reimbursement for 
+          approved home office ergonomic chairs, desks, and external monitors.
+   7.2. Receipt Submission Rules
+        - To qualify for reimbursement, receipts must be submitted via the HR Portal
+          within 30 days of purchase.
+        - Submissions made 31 days or more post-purchase will be rejected.
+
+8. PROCEDURAL STEP-BY-STEP FLOW
+   Step 1: Employee applies for remote-work status through the HR portal.
+   Step 2: Manager approves remote status based on performance.
+   Step 3: Employee purchases ergonomic chair (under $500 limit).
+   Step 4: Employee logs receipt in HR reimbursement system within 30 days.
+   Step 5: HR Coordinator reviews request and checks timestamp.
+   Step 6: Finance issues reimbursement on the next pay cycle.
+   Step 7: Employee maintains 10:00 AM - 4:00 PM availability and VPN security daily.
+
+9. TROUBLESHOOTING & ESCALATION PROCEDURES
+   9.1. Responsiveness Failures
+        - If an employee fails to respond within 60 minutes multiple times, the
+          manager will log a performance incident and notify HR.
+   9.2. Escalation Contact Path
+        - First Level: Department Team Manager.
+        - Second Level: HR Director (Kavita Sharma).
+        - Executive Escalation: VP of Engineering (Sneha Deshmukh).
+
+10. REVISION HISTORY LOG
+   -----------------------------------------------------------------------------
+   Version | Date       | Author        | Description of Change
+   -----------------------------------------------------------------------------
+   v1.0    | 2024-04-10 | K. Sharma     | Initial release of remote work policy.
+   v2.0    | 2025-03-01 | K. Sharma     | Introduced the $500 ergonomic fund.
+   v3.2    | 2026-01-15 | K. Sharma     | Added core hours 10 AM-4 PM EST rules.
+   -----------------------------------------------------------------------------

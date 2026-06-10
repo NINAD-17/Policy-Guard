@@ -1,0 +1,112 @@
+PULSEGUARD TECHNOLOGIES INC. - STANDARD OPERATING PROCEDURE
+================================================================================
+Document ID:     SOP-DATA-001
+Title:           PRODUCTION DATA ACCESS AND PRIVACY PROTOCOLS
+Version:         v3.0
+Effective Date:  January 15, 2026
+Review Date:     January 15, 2027
+Department:      Data & Analytics
+Author:          Sanjay Mehta (Chief Data Officer)
+Approver:        Sneha Deshmukh (VP of Engineering / Data Committee)
+Classification:  Internal Restricted
+================================================================================
+
+1. PURPOSE & OBJECTIVE
+   This Standard Operating Procedure (SOP) defines the mandatory access request 
+   procedures, anonymization guidelines, and data governance policies for sensitive 
+   production databases and Customer Personally Identifiable Information (PII) at 
+   PulseGuard. The goal is to enforce strict compliance with data privacy regulations
+   (GDPR, CCPA) and prevent unauthorized access or data leaks.
+
+2. SCOPE
+   This procedure applies to all direct database access requests, analytical queries,
+   reporting extracts, dashboard configurations, and data exports involving 
+   customer records owned, managed, or stored by PulseGuard Technologies Inc. 
+   It governs all data analysts, database administrators, and developers.
+
+3. ROLES AND RESPONSIBILITIES
+   3.1. Data Custodian (Database Administrator)
+        - Manages database permissions and RLS configurations.
+        - Wipes and anonymizes staging database exports.
+        - Performs quarterly database access reviews.
+   3.2. Data Analyst / Developer
+        - Submits data access tickets with formal business justification.
+        - Employs data masking/anonymization before sharing datasets.
+   3.3. Chief Data Officer (CDO)
+        - Approves access requests for production financial or customer database logs.
+        - Reviews data audit logs monthly.
+
+4. DEFINITIONS AND REFERENCES
+   - Personally Identifiable Information (PII): Any data that can identify a specific
+     individual (e.g. names, emails, phone numbers, passport numbers).
+   - Row-Level Security (RLS): A database security feature that restricts database
+     rows based on the department or profile of the user executing the query.
+   - IT Ticketing System: The official company ticket portal (Jira Access Management).
+   - SOP-DATA-002: Data Backup and Retention Policy (reference document).
+
+5. DATA ACCESS REQUEST AND APPROVAL RULES
+   Any employee requesting database access must conform to the following mandates:
+   5.1. Logged Requests Required
+        - All requests for direct database access must be logged via the IT Ticketing 
+          System.
+        - Verbal, text message, or email approvals are strictly invalid. Operating
+          without a ticket is a compliance violation.
+   5.2. Business Justification
+        - The access request ticket must specify the business purpose, the target tables,
+          and a designated expiration date (no longer than 90 days).
+   5.3. Inactive Revocation
+        - Access is automatically revoked after 30 days of inactivity.
+
+6. PERSONAL DATA MASKING AND ANONYMIZATION RULES
+   To protect customer privacy, data must be treated as follows:
+   6.1. Export Anonymization
+        - Any extract containing Customer Personally Identifiable Information (PII)
+          must be anonymized, masked, or scrubbed before export.
+        - Exporting raw PII to local machines is strictly prohibited unless approved
+          directly by the CDO for urgent legal investigations.
+   6.2. Masking Standards
+        - Emails must be masked (e.g. u***r@company.com), phone numbers replaced with
+          random values, and addresses truncated to ZIP codes.
+
+7. ANALYTICAL ROW-LEVEL SECURITY (RLS) RULES
+   To restrict access to financial dashboard information, RLS is mandatory:
+   7.1. Departmental RLS Implementation
+        - All analytical dashboards and reporting schemas containing financial data
+          must implement row-level security based on the user's department.
+        - Users may only view rows corresponding to their assigned business department.
+
+8. AUDITING AND QUARTERLY ACCESS REVIEWS
+   Permissions must be audited continuously to prevent access bloat:
+   8.1. Quarterly Reviews
+        - A formal quarterly review of all database permissions must be performed
+          by the Data Custodian.
+        - Inactive, legacy, or transferred user permissions must be revoked within
+          24 hours of audit completion.
+
+9. PROCEDURAL STEP-BY-STEP FLOW
+   Step 1: Analyst identifies a business need for customer database access.
+   Step 2: Analyst submits a Jira ticket containing detailed justification.
+   Step 3: DBA reviews the ticket, confirms scope, and assigns temporary access.
+   Step 4: CDO signs off on the ticket for production permissions.
+   Step 5: DBA configures access and ensures RLS is active for the user's department.
+   Step 6: Analyst executes queries. If exporting, analyst runs the anonymization utility.
+   Step 7: DBA logs quarterly audit, identifying legacy users.
+   Step 8: Legacy permissions are revoked, and the audit report is signed by CDO.
+
+10. TROUBLESHOOTING & ESCALATION PROCEDURES
+   10.1. Unauthorized Access Alert
+         - If an automated alert detects a user querying tables outside their scope
+           without a Jira ticket, access is auto-disabled.
+   10.2. Escalation Contact Path
+         - First Level: Data Custodian (DBA Team).
+         - Second Level: Chief Data Officer (Sanjay Mehta).
+         - Executive Escalation: VP of Engineering (Sneha Deshmukh / Escalation Lead).
+
+11. REVISION HISTORY LOG
+   -----------------------------------------------------------------------------
+   Version | Date       | Author        | Description of Change
+   -----------------------------------------------------------------------------
+   v1.0    | 2024-02-15 | S. Mehta      | Initial data access governance SOP.
+   v2.0    | 2025-01-20 | S. Mehta      | Mandated IT Ticketing for all database logs.
+   v3.0    | 2026-01-15 | S. Mehta      | Added strict PII anonymization mandates.
+   -----------------------------------------------------------------------------

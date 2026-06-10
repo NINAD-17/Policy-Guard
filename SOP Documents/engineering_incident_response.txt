@@ -1,0 +1,120 @@
+PULSEGUARD TECHNOLOGIES INC. - STANDARD OPERATING PROCEDURE
+================================================================================
+Document ID:     SOP-ENG-002
+Title:           SECURITY INCIDENT RESPONSE PROTOCOL
+Version:         v4.1
+Effective Date:  January 15, 2026
+Review Date:     January 15, 2027
+Department:      Engineering
+Author:          Vikram Kulkarni (Director of Security Operations)
+Approver:        Sneha Deshmukh (VP of Engineering)
+Classification:  Internal Restricted
+================================================================================
+
+1. PURPOSE & OBJECTIVE
+   This document outlines the mandatory procedures for identifying, responding to,
+   and mitigating security and technical incidents within the PulseGuard technical 
+   infrastructure. The objective is to minimize downtime, protect sensitive system 
+   boundaries, ensure compliance with privacy laws, and recover quickly from 
+   unforeseen breaches or hardware faults.
+
+2. SCOPE
+   This SOP applies to all security incidents, data breaches, key exposures, 
+   system outages, and physical breaches impacting the digital infrastructure, 
+   networks, cloud environments, or software products of PulseGuard Technologies 
+   Inc. It governs all internal engineers, response squads, and support teams.
+
+3. ROLES AND RESPONSIBILITIES
+   3.1. Incident Commander (IC)
+        - Takes ownership of the incident log and lifecycle.
+        - Directs technical mitigation tasks and assigns team duties.
+        - Documents timelines and corrective actions.
+   3.2. Chief Security Officer (CSO)
+        - Receives official alerts for high-risk leaks or compromises.
+        - Authorizes communications to external clients or regulators.
+   3.3. Response Engineers
+        - Investigate technical logs to determine root causes.
+        - Revoke/rotate keys, deploy hotfixes, and reset configurations.
+   3.4. VP of Engineering
+        - Approves major architectural adjustments under incident stress.
+        - Coordinates resource allocation across engineering departments.
+
+4. DEFINITIONS AND REFERENCES
+   - Incident: An unplanned disruption or security event affecting infrastructure.
+   - PII: Personally Identifiable Information (emails, phone numbers, addresses).
+   - Grade-1 (Critical): Compromise of production systems, databases, active key
+     leaks (AWS keys, database passwords in public repos), or PII exposure.
+   - Grade-2 (Major): Outage of staging environment or non-critical tools.
+   - Grade-3 (Minor): Small bugs or UI glitches that do not block operations.
+   - SOP-ENG-001: Engineering Code Review Protocols (reference document).
+
+5. INCIDENT CLASSIFICATION MATRIX
+   Incidents must be graded upon detection according to this matrix:
+   5.1. Grade-1 Incident Criteria:
+        - Compromise or leak of database configurations.
+        - Active secret key or credential checked into public GitHub.
+        - Data breach exposing user data (PII).
+        - Total production service outage affecting >5% of active users.
+   5.2. Grade-2 Incident Criteria:
+        - Staging database failure.
+        - CI/CD build system blockages.
+        - Internal ticketing or wiki system down.
+   5.3. Grade-3 Incident Criteria:
+        - Incorrect styling on internal dashboards.
+        - Non-blocking console warning logs.
+        - Performance degradation under 5%.
+
+6. MANDATORY RESPONSE TIMELINES FOR GRADE-1 CRITICAL LEAKS
+   If a Grade-1 incident is identified, the following timelines are legally binding:
+   6.1. Reporting and Notification
+        - The Chief Security Officer (CSO) must be notified immediately.
+        - The absolute deadline for CSO notification is 15 minutes from detection.
+   6.2. Credential Rotation Window
+        - If an active API key or AWS secret is leaked to a public repository, the 
+          affected credentials must be rotated immediately.
+        - The mandatory rotation window is 1 hour from the moment of detection.
+   6.3. Weekend and Holiday Support
+        - Grade-1 incidents must be handled immediately.
+        - Incident response is active 24/7/365. Waiting for business hours or the 
+          weekend to end to rotate keys or report breaches is a severe protocol 
+          violation and subject to immediate disciplinary audit.
+   6.4. Mitigation and Containment
+        - Isolation of affected servers or networks must happen within 30 minutes.
+
+7. PROCEDURAL STEP-BY-STEP RESPONSE FLOW (GRADE-1 LEAKS)
+   Step 1: Detection
+        - Automations or developers identify a public leak of key parameters.
+   Step 2: Declaration
+        - Developer declares Grade-1 Incident in the emergency slack channel.
+   Step 3: Notification
+        - Incident Commander pages the CSO and VP of Engineering (15 mins max).
+   Step 4: Containment (Credential Rotation)
+        - Engineer identifies the exposed key (e.g. AWS).
+        - Revokes key permissions via the cloud access management panel.
+        - Generates new key and updates production configurations securely.
+        - Confirms revocation and updates target PR/branch (1 hour max).
+   Step 5: Investigation
+        - Forensic engineers review logs to check if the key was exploited.
+   Step 6: Resolution
+        - System is verified clean, and the incident is marked "Resolved".
+   Step 7: Post-Mortem
+        - A post-mortem document is compiled within 48 hours to prevent recurrences.
+
+8. TROUBLESHOOTING & ESCALATION PROCEDURES
+   8.1. Delayed Credential Rotation
+        - If rotation is not completed in 1 hour, the ticketing system triggers
+          an automated priority escalation call to the department manager.
+   8.2. Escalation Contact Path
+        - First Contact: Department Engineering Lead.
+        - Second Contact: Sneha Deshmukh (VP of Engineering / Escalation Manager).
+        - Executive Escalation: CSO Office (security-alerts@policypulse.dev).
+
+9. REVISION HISTORY LOG
+   -----------------------------------------------------------------------------
+   Version | Date       | Author        | Description of Change
+   -----------------------------------------------------------------------------
+   v1.0    | 2023-04-12 | V. Kulkarni   | Initial launch of incident protocol.
+   v2.0    | 2024-02-18 | V. Kulkarni   | Added AWS key rotation schedules.
+   v3.0    | 2025-05-10 | S. Deshmukh   | Extended 24/7 weekend support requirements.
+   v4.1    | 2026-01-15 | V. Kulkarni   | Added strict 15-minute notification rules.
+   -----------------------------------------------------------------------------

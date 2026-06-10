@@ -1,0 +1,89 @@
+PULSEGUARD TECHNOLOGIES INC. - STANDARD OPERATING PROCEDURE
+================================================================================
+Document ID:     SOP-HR-002
+Title:           MANDATORY EMPLOYEE ONBOARDING AND IDENTITY VERIFICATION FLOW
+Version:         v2.6
+Effective Date:  January 15, 2026
+Review Date:     January 15, 2027
+Department:      Human Resources (HR)
+Author:          Kavita Sharma (HR Director)
+Approver:        Sneha Deshmukh (VP of Engineering / HR Sponsor)
+Classification:  Internal Restricted
+================================================================================
+
+1. PURPOSE & OBJECTIVE
+   This Standard Operating Procedure (SOP) defines the mandatory sequence of actions
+   required during employee onboarding. The objective is to verify candidate identity,
+   ensure agreement to confidentiality terms, provide necessary hardware, and restrict
+   IT systems access until identity checks are formally verified, ensuring 100% security
+   compliance.
+
+2. SCOPE
+   This procedure governs the onboarding lifecycle of all new hires, contractors,
+   temporary consultants, and interns joining PulseGuard Technologies Inc. It dictates
+   all coordination tasks between HR, IT, and Hiring Managers.
+
+3. ROLES AND RESPONSIBILITIES
+   3.1. HR Coordinator
+        - Inspects new hire identity documents.
+        - Verifies Compliance and Confidentiality Agreement signatures.
+        - Updates the HR system status to "Verified".
+   3.2. IT Support Technician
+        - Provisions laptop/hardware assets.
+        - Creates internal email and VPN access accounts.
+        - Holds access details until HR issues the clearance notification.
+   3.3. Hiring Manager
+        - Defines departmental training and onboarding plans.
+        - Assigns onboarding buddies.
+
+4. DEFINITIONS AND REFERENCES
+   - Identity Verification: The physical or video validation of two government-issued 
+     documents to confirm candidate identity.
+   - NDA: Non-Disclosure Agreement / Compliance and Confidentiality Agreement.
+   - SOP-HR-001: Remote Work Expectations and Procedures (reference document).
+
+5. MANDATORY ONBOARDING COMPLIANCE SEQUENCE
+   The onboarding sequence must follow these strict timelines:
+   5.1. Identity Verification Timing
+        - The HR coordinator must verify two government-issued IDs (e.g. Passport,
+          Driver's License, or SSN card) on or before the employee's first working day.
+   5.2. Agreement Execution Timeframe
+        - The new hire must sign the formal Compliance and Confidentiality Agreement
+          within 3 business days of onboarding.
+   5.3. IT Account Activation Constraint
+        - IT system access accounts (VPN, Github, email, Slack) must not be activated 
+          until the identity verification step is marked complete in the HR database.
+        - Early activation of accounts prior to ID verification is a severe audit fail.
+   5.4. Equipment Delivery Timing
+        - All physical IT hardware (laptops, security keys) must be shipped to 
+          arrive at the employee's registered address at least 5 days prior to their 
+          start date.
+
+6. STEP-BY-STEP WORKFLOW
+   Step 1: HR extends formal offer. Candidate accepts and signs offer letter.
+   Step 2: HR coordinator requests shipping address and sends to IT.
+   Step 3: IT ships pre-configured laptop to arrive 5 days before start date.
+   Step 4: New Hire submits high-resolution copies of two government IDs.
+   Step 5: HR coordinator conducts video call verification of IDs on day 1.
+   Step 6: HR coordinator updates status to "ID Verified" in system.
+   Step 7: IT Support Technician receives status alert and activates active directory.
+   Step 8: New Hire logs in, reviews compliance docs, and signs the NDA within 3 days.
+   Step 9: Onboarding checklist is archived in the employee's HR file.
+
+7. EXCEPTION AND ESCALATION HANDLING
+   7.1. Missing Documentation
+        - If an employee fails to sign the Compliance Agreement in 3 days, their accounts
+          must be suspended, and the case escalated to the HR Director.
+   7.2. Escalation Contact Path
+        - First Level: HR Coordinator.
+        - Second Level: HR Director (Kavita Sharma).
+        - Executive Escalation: VP of Engineering (Sneha Deshmukh).
+
+8. REVISION HISTORY LOG
+   -----------------------------------------------------------------------------
+   Version | Date       | Author        | Description of Change
+   -----------------------------------------------------------------------------
+   v1.0    | 2024-03-22 | K. Sharma     | Initial release of onboarding process.
+   v2.0    | 2025-05-11 | K. Sharma     | Mandated 5-day hardware delivery timeline.
+   v2.6    | 2026-01-15 | K. Sharma     | Added strict IT account activation locks.
+   -----------------------------------------------------------------------------

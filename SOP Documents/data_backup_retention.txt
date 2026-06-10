@@ -1,0 +1,94 @@
+PULSEGUARD TECHNOLOGIES INC. - STANDARD OPERATING PROCEDURE
+================================================================================
+Document ID:     SOP-DATA-002
+Title:           DATA BACKUP AND RETENTION POLICY
+Version:         v2.4
+Effective Date:  January 15, 2026
+Review Date:     January 15, 2027
+Department:      Data & Analytics
+Author:          Sanjay Mehta (Chief Data Officer)
+Approver:        Sneha Deshmukh (VP of Engineering / Data Committee)
+Classification:  Internal Restricted
+================================================================================
+
+1. PURPOSE & OBJECTIVE
+   This Standard Operating Procedure (SOP) defines the mandatory backup schedules,
+   backup encryption guidelines, and data retention rules for business records and 
+   production data at PulseGuard. The goal is to ensure high availability, guarantee
+   data recovery capabilities in emergency scenarios, and strictly comply with 
+   financial and privacy retention laws.
+
+2. SCOPE
+   This procedure governs all active databases, database archives, file storage buckets 
+   (S3), server snapshot backups, transaction logs, and customer chat histories owned
+   or operated by PulseGuard Technologies Inc. It applies to all DevOps and DBA staff.
+
+3. ROLES AND RESPONSIBILITIES
+   3.1. Infrastructure Engineer (DevOps)
+        - Configures and monitors automated backup pipelines.
+        - Verifies encryption key mappings in KMS.
+        - Wipes expired customer records according to retention rules.
+   3.2. Database Administrator (DBA)
+        - Tests backup integrity via weekly restoration trials.
+        - Manages backup snapshot archiving tasks.
+   3.3. Chief Data Officer (CDO)
+        - Review audit logs of backup completions monthly.
+        - Authorizes exceptions to the standard retention schedules.
+
+4. DEFINITIONS AND REFERENCES
+   - Incremental Backup: Capturing only the changes made since the last backup run.
+   - KMS (Key Management Service): A cloud service for managing encryption keys.
+   - AES-256: Advanced Encryption Standard with a 256-bit key length.
+   - SOP-DATA-001: Production Data Access and Privacy Protocols (reference).
+
+5. MANDATORY BACKUP RULES AND FREQUENCY
+   Backup routines must be automated and operate on these schedules:
+   5.1. Daily Backup Schedule
+        - Incremental backups must be executed every 24 hours at 1:00 AM UTC.
+        - Failures in the daily backup pipeline must generate alerts to DevOps.
+   5.2. Monthly Backup Schedule
+        - Full snapshot backups must be taken on the 1st of every month.
+   5.3. Backup Encryption Guidelines
+        - All backup archives must be encrypted using AES-256.
+        - Encryption keys must be stored in a separate KMS. Keeping keys on the
+          same server as the backup archives is strictly forbidden.
+   5.4. Restoration Testing
+        - DBA must perform a dry-run restoration test once every month.
+
+6. DATA RETENTION PERIODS AND PURGING MANDATES
+   Business records and logs must be stored and purged according to these rules:
+   6.1. Financial Logs Retention
+        - All transaction logs, invoicing records, and tax logs must be retained
+          for a minimum of 7 years.
+   6.2. Customer Chat History Retention
+        - Customer chat history logs must be retained for a maximum of 1 year.
+        - Once a log exceeds the 1-year timeline, it must be purged automatically
+          via scheduled DB cleanups.
+        - Retention of chat history beyond 1 year is a compliance violation.
+
+7. PROCEDURAL STEP-BY-STEP FLOW
+   Step 1: Automated cron triggers daily backup script at 1:00 AM UTC.
+   Step 2: Script generates snapshot, compresses it, and encrypts via KMS AES-256.
+   Step 3: Encrypted backup is uploaded to a secure, write-once S3 storage bucket.
+   Step 4: Backup job sends completion status to the monitoring dashboard.
+   Step 5: On the 1st of the month, cron triggers the full monthly backup script.
+   Step 6: Weekly cleanup cron identifies chat logs older than 365 days.
+   Step 7: Cleanup cron runs DB purge command to permanently wipe expired chats.
+   Step 8: CDO signs off on monthly backup and retention verification report.
+
+8. TROUBLESHOOTING & EMERGENCY RESTORATION
+   8.1. Backup Failure Response
+        - If a daily backup fails twice in a row, the alert escalates to CDO.
+   8.2. Escalation Contact Path
+        - First Level: DevOps Alert System (devops-alerts@policypulse.dev).
+        - Second Level: Chief Data Officer (Sanjay Mehta).
+        - Executive Escalation: VP of Engineering (Sneha Deshmukh).
+
+9. REVISION HISTORY LOG
+   -----------------------------------------------------------------------------
+   Version | Date       | Author        | Description of Change
+   -----------------------------------------------------------------------------
+   v1.0    | 2024-03-01 | S. Mehta      | Initial backup and retention SOP.
+   v2.0    | 2025-02-12 | S. Mehta      | Added AES-256 encryption requirements.
+   v2.4    | 2026-01-15 | S. Mehta      | Mandated 1-year chat history purges.
+   -----------------------------------------------------------------------------

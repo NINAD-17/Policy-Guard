@@ -79,7 +79,7 @@ const DEMO_LOGS: AuditLogEntry[] = [
         },
     },
     {
-        _id: "demo-1",
+        _id: "demo-2",
         userQuery: "Does my code review process follow the company SOP?",
         userText: "I usually quickly scan the code for syntax errors. I didn't run any tests. My review took about 5 minutes. No other reviewer was involved.",
         confidenceScore: 0.95,

@@ -14,9 +14,28 @@ interface AuditFeedProps {
 export function AuditFeed({ logs, loading, processing }: AuditFeedProps) {
     const bottomRef = useRef<HTMLDivElement>(null);
 
-    // Auto-scroll to bottom when new logs arrive
+    // Auto-scroll to bottom when new logs arrive without shifting window/body viewport
     useEffect(() => {
-        bottomRef.current?.scrollIntoView({ behavior: "smooth" });
+        const timer = setTimeout(() => {
+            if (!bottomRef.current) return;
+            let parent = bottomRef.current.parentElement;
+            while (parent) {
+                const hasScrollableContent = parent.scrollHeight > parent.clientHeight;
+                const overflowY = window.getComputedStyle(parent).overflowY;
+                const isScrollableStyle = overflowY === "auto" || overflowY === "scroll";
+                
+                if (hasScrollableContent && isScrollableStyle) {
+                    parent.scrollTo({
+                        top: parent.scrollHeight,
+                        behavior: "smooth",
+                    });
+                    break;
+                }
+                parent = parent.parentElement;
+            }
+        }, 100);
+
+        return () => clearTimeout(timer);
     }, [logs.length, processing]);
 
     if (loading) {

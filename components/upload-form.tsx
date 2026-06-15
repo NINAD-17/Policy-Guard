@@ -94,23 +94,23 @@ export function UploadForm({ onUploadSuccess }: UploadFormProps) {
     };
 
     return (
-        <Card>
-            <CardHeader>
-                <CardTitle className="flex items-center gap-2">
-                    <Upload className="h-5 w-5" />
+        <Card className="glass-panel bg-card/45 backdrop-blur-xl border-white/10 shadow-[0_12px_40px_-10px_rgba(0,0,0,0.5)] rounded-[2rem] p-4 md:p-6 transition-all duration-300">
+            <CardHeader className="pb-4">
+                <CardTitle className="flex items-center gap-2 text-xl font-bold tracking-tight">
+                    <Upload className="h-5 w-5 text-primary" />
                     Upload SOP Document
                 </CardTitle>
-                <CardDescription>
+                <CardDescription className="text-muted-foreground/80">
                     Upload a PDF policy document. It will be automatically
                     processed, chunked, and indexed for AI-powered compliance
                     auditing.
                 </CardDescription>
             </CardHeader>
             <CardContent>
-                <form onSubmit={handleSubmit} className="space-y-4">
-                    <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                <form onSubmit={handleSubmit} className="space-y-5">
+                    <div className="grid grid-cols-1 md:grid-cols-2 gap-5">
                         <div className="space-y-2">
-                            <Label htmlFor="title">Title</Label>
+                            <Label htmlFor="title" className="text-xs font-semibold text-muted-foreground uppercase tracking-wider ml-1">Title</Label>
                             <Input
                                 id="title"
                                 placeholder="e.g. Code Review Guidelines"
@@ -118,23 +118,24 @@ export function UploadForm({ onUploadSuccess }: UploadFormProps) {
                                 onChange={(e) => setTitle(e.target.value)}
                                 required
                                 disabled={loading}
+                                className="bg-background/50 border-white/10 h-12 rounded-xl px-4 focus-visible:ring-1 focus-visible:ring-white/20 transition-colors"
                             />
                         </div>
                         <div className="space-y-2">
-                            <Label htmlFor="scope">Scope</Label>
+                            <Label htmlFor="scope" className="text-xs font-semibold text-muted-foreground uppercase tracking-wider ml-1">Scope</Label>
                             <Select
                                 value={scope}
                                 onValueChange={setScope}
                                 disabled={loading}
                             >
-                                <SelectTrigger id="scope">
+                                <SelectTrigger id="scope" className="bg-background/50 border-white/10 h-12 rounded-xl px-4 focus-visible:ring-1 focus-visible:ring-white/20 transition-colors">
                                     <SelectValue />
                                 </SelectTrigger>
-                                <SelectContent>
-                                    <SelectItem value="global">
+                                <SelectContent className="glass-panel bg-card/95 border-white/15 rounded-xl">
+                                    <SelectItem value="global" className="hover:bg-white/5 focus:bg-white/5 rounded-lg">
                                         Global (all departments)
                                     </SelectItem>
-                                    <SelectItem value="department-specific">
+                                    <SelectItem value="department-specific" className="hover:bg-white/5 focus:bg-white/5 rounded-lg">
                                         Department-specific
                                     </SelectItem>
                                 </SelectContent>
@@ -143,8 +144,8 @@ export function UploadForm({ onUploadSuccess }: UploadFormProps) {
                     </div>
 
                     {scope === "department-specific" && (
-                        <div className="space-y-2">
-                            <Label>Departments</Label>
+                        <div className="space-y-2.5 animate-in fade-in slide-in-from-top-2 duration-300">
+                            <Label className="text-xs font-semibold text-muted-foreground uppercase tracking-wider ml-1">Departments</Label>
                             <div className="flex flex-wrap gap-2">
                                 {DEPARTMENTS.map((dept) => (
                                     <Button
@@ -158,6 +159,11 @@ export function UploadForm({ onUploadSuccess }: UploadFormProps) {
                                         size="sm"
                                         onClick={() => toggleDepartment(dept)}
                                         disabled={loading}
+                                        className={
+                                            departments.includes(dept)
+                                                ? "bg-primary text-primary-foreground rounded-full px-4 h-9 shadow-md transition-all font-medium"
+                                                : "border-white/10 hover:bg-white/5 text-muted-foreground hover:text-foreground rounded-full px-4 h-9 transition-all font-medium"
+                                        }
                                     >
                                         {dept}
                                     </Button>
@@ -167,7 +173,7 @@ export function UploadForm({ onUploadSuccess }: UploadFormProps) {
                     )}
 
                     <div className="space-y-2">
-                        <Label htmlFor="description">Description</Label>
+                        <Label htmlFor="description" className="text-xs font-semibold text-muted-foreground uppercase tracking-wider ml-1">Description</Label>
                         <Textarea
                             id="description"
                             placeholder="Brief description of this SOP document..."
@@ -175,12 +181,13 @@ export function UploadForm({ onUploadSuccess }: UploadFormProps) {
                             onChange={(e) => setDescription(e.target.value)}
                             required
                             disabled={loading}
-                            rows={2}
+                            rows={3}
+                            className="bg-background/50 border-white/10 rounded-xl px-4 py-3 focus-visible:ring-1 focus-visible:ring-white/20 resize-none transition-colors min-h-[80px]"
                         />
                     </div>
 
                     <div className="space-y-2">
-                        <Label htmlFor="file">PDF File</Label>
+                        <Label htmlFor="file" className="text-xs font-semibold text-muted-foreground uppercase tracking-wider ml-1">PDF File</Label>
                         <div className="flex items-center gap-3">
                             <Input
                                 id="file"
@@ -191,33 +198,33 @@ export function UploadForm({ onUploadSuccess }: UploadFormProps) {
                                     setFile(e.target.files?.[0] || null)
                                 }
                                 disabled={loading}
-                                className="flex-1"
+                                className="flex-1 bg-background/50 border-white/10 h-12 rounded-xl px-4 focus-visible:ring-1 focus-visible:ring-white/20 file:mr-4 file:py-1 file:px-3 file:rounded-full file:border-0 file:text-xs file:font-semibold file:bg-primary/20 file:text-primary hover:file:bg-primary/30 file:cursor-pointer transition-colors"
                             />
                             {file && (
-                                <div className="flex items-center gap-2 text-sm text-muted-foreground">
-                                    <FileText className="h-4 w-4" />
-                                    <span className="max-w-[150px] truncate">
+                                <div className="flex items-center gap-2 text-sm text-muted-foreground bg-white/5 border border-white/5 rounded-xl px-3 h-12 animate-in fade-in zoom-in-95 duration-200">
+                                    <FileText className="h-4 w-4 text-primary" />
+                                    <span className="max-w-[150px] truncate text-xs font-medium text-foreground">
                                         {file.name}
                                     </span>
                                     <Button
                                         type="button"
                                         variant="ghost"
                                         size="icon"
-                                        className="h-6 w-6"
+                                        className="h-6 w-6 rounded-full hover:bg-white/10 hover:text-foreground text-muted-foreground transition-all ml-1"
                                         onClick={() => {
                                             setFile(null);
                                             if (fileInputRef.current)
                                                 fileInputRef.current.value = "";
                                         }}
                                     >
-                                        <X className="h-3 w-3" />
+                                        <X className="h-3.5 w-3.5" />
                                     </Button>
                                 </div>
                             )}
                         </div>
                     </div>
 
-                    <Button type="submit" disabled={loading || !file}>
+                    <Button type="submit" disabled={loading || !file} className="w-full md:w-auto h-12 rounded-xl bg-primary text-primary-foreground hover:bg-primary/90 font-medium px-6 shadow-md transition-all duration-300 hover:scale-[1.02] hover:shadow-[0_0_40px_-10px_rgba(var(--primary),0.5)] cursor-pointer">
                         {loading ? (
                             <>
                                 <Loader2 className="mr-2 h-4 w-4 animate-spin" />

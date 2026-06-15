@@ -36,13 +36,29 @@ export default function AdminPage() {
         fetchDocuments();
     }, [fetchDocuments]);
 
+    // Smart polling: poll every 5 seconds only when any document has status === "processing"
+    useEffect(() => {
+        const hasProcessing = documents.some((doc) => doc.status === "processing");
+        let interval: NodeJS.Timeout | null = null;
+
+        if (hasProcessing) {
+            interval = setInterval(() => {
+                fetchDocuments();
+            }, 5000);
+        }
+
+        return () => {
+            if (interval) clearInterval(interval);
+        };
+    }, [documents, fetchDocuments]);
+
     return (
-        <div className="space-y-8">
+        <div className="space-y-8 max-w-5xl mx-auto">
             <div>
-                <h2 className="text-2xl font-bold tracking-tight">
+                <h2 className="text-3xl font-extrabold tracking-tight bg-gradient-to-br from-foreground to-foreground/60 bg-clip-text text-transparent">
                     Document Management
                 </h2>
-                <p className="text-muted-foreground mt-1">
+                <p className="text-sm text-muted-foreground mt-1.5">
                     Upload and manage Standard Operating Procedure documents.
                 </p>
             </div>

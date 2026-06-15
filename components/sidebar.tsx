@@ -42,7 +42,7 @@ export function Sidebar() {
 
     const handleLogout = async () => {
         await signOut();
-        window.location.href = "/";
+        window.location.href = "/?logout=true";
     };
 
     const navItems = [
@@ -54,7 +54,7 @@ export function Sidebar() {
     const SidebarContent = () => (
         <div className="flex flex-col h-full glass-panel border-r border-white/10 relative z-20 w-72 rounded-none">
             {/* Header */}
-            <div className="p-6 flex items-center gap-3">
+            <div className="mt-16 lg:mt-0 p-6 flex items-center gap-3">
                 <Link href="/" className="p-2 bg-primary/20 rounded-xl border border-primary/30 hover:bg-primary/30 transition-colors" title="Back to home">
                     <ShieldCheck className="h-6 w-6 text-primary" />
                 </Link>
@@ -144,20 +144,20 @@ export function Sidebar() {
             <Button
                 variant="ghost"
                 size="icon"
-                className="md:hidden fixed top-4 left-4 z-50 h-12 w-12 glass-panel rounded-full text-foreground hover:text-primary transition-colors"
+                className="lg:hidden fixed top-4 left-4 z-50 h-12 w-12 glass-panel rounded-full text-foreground hover:text-primary transition-colors"
                 onClick={() => setMobileOpen(!mobileOpen)}
             >
                 {mobileOpen ? <X className="h-6 w-6" /> : <Menu className="h-6 w-6" />}
             </Button>
 
             {/* Desktop Sidebar */}
-            <div className="hidden md:block h-screen shrink-0 relative z-10">
+            <div className="hidden lg:block h-dvh shrink-0 relative z-10">
                 <SidebarContent />
             </div>
 
             {/* Mobile Sidebar Overlay */}
             {mobileOpen && (
-                <div className="md:hidden fixed inset-0 z-40 bg-gradient-to-br from-foreground to-foreground/70 bg-clip-text text-transparent" onClick={() => setMobileOpen(false)}>
+                <div className="lg:hidden fixed inset-0 z-40 bg-gradient-to-br from-foreground to-foreground/70 bg-clip-text text-transparent" onClick={() => setMobileOpen(false)}>
                     <div className="absolute top-0 left-0 h-full w-72" onClick={(e) => e.stopPropagation()}>
                         <SidebarContent />
                     </div>

@@ -27,10 +27,10 @@ export default function RootLayout({
   return (
     <html lang="en" className="dark">
       <body
-        className={`${geistSans.variable} ${geistMono.variable} antialiased h-screen w-screen overflow-hidden bg-background`}
+        className={`${geistSans.variable} ${geistMono.variable} antialiased h-dvh w-screen overflow-hidden bg-background`}
       >
         {children}
-        <Toaster richColors position="top-right" />
+        <Toaster position="top-center" />
       </body>
     </html>
   );

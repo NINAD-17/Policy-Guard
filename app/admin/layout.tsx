@@ -13,7 +13,7 @@ export default function AdminLayout({
 
     const handleLogout = async () => {
         await signOut();
-        window.location.href = "/";
+        window.location.href = "/?logout=true";
     };
 
     return (

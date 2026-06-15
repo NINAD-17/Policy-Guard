@@ -7,6 +7,7 @@ import { ShieldCheck, ArrowRight, Sparkles, X, Loader2 } from "lucide-react";
 import { useSession, signIn } from "@/lib/auth-client";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
+import { toast } from "sonner";
 
 function HomeContent() {
     const { data: session, isPending } = useSession();
@@ -18,6 +19,27 @@ function HomeContent() {
     useEffect(() => {
         if (searchParams.get("login") === "true" && !session) {
             setShowModal(true);
+        }
+    }, [searchParams, session]);
+
+    // Handle toast alerts from query parameters
+    useEffect(() => {
+        const logout = searchParams.get("logout");
+        const login = searchParams.get("login");
+        const callbackUrl = searchParams.get("callbackUrl");
+
+        if (logout === "true") {
+            toast.success("Logged out successfully!");
+            // Clean url query parameters
+            const url = new URL(window.location.href);
+            url.searchParams.delete("logout");
+            window.history.replaceState({}, "", url.pathname + url.search);
+        } else if (login === "true" && callbackUrl && !session) {
+            toast.error("Session expired. Please sign in again.");
+            // Clean login parameters so the error toast doesn't re-trigger on subsequent updates
+            const url = new URL(window.location.href);
+            url.searchParams.delete("login");
+            window.history.replaceState({}, "", url.pathname + url.search);
         }
     }, [searchParams, session]);
     
@@ -38,6 +60,7 @@ function HomeContent() {
                 setLoading(false);
                 return;
             }
+            toast.success("Signed in successfully!");
             router.push(searchParams.get("callbackUrl") || "/dashboard");
         } catch {
             setError("Something went wrong. Please try again.");
@@ -58,6 +81,7 @@ function HomeContent() {
                 setLoading(false);
                 return;
             }
+            toast.success("Logged in as Guest!");
             router.push(searchParams.get("callbackUrl") || "/dashboard");
         } catch {
             setError("Something went wrong with guest login.");

@@ -44,7 +44,7 @@ export function ChatInput({ onSubmit, loading }: ChatInputProps) {
     };
 
     return (
-        <div className="absolute bottom-6 left-1/2 -translate-x-1/2 w-full max-w-3xl px-4 z-20">
+        <div className="absolute bottom-6 left-0 right-0 mx-auto w-full max-w-3xl px-4 z-20">
             <div className="glass-panel bg-card/75 border-white/20 shadow-[0_12px_40px_-10px_rgba(0,0,0,0.7)] rounded-[2rem] p-1.5 transition-all duration-300 focus-within:shadow-[0_8px_40px_-12px_rgba(var(--primary),0.3)] focus-within:bg-card/85 focus-within:border-white/30">
                 <form onSubmit={handleSubmit} className="flex flex-col">
                     {/* Expandable text area for work text */}

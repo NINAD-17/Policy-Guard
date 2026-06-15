@@ -13,7 +13,7 @@ function getEmbeddings(): GoogleGenerativeAIEmbeddings {
 
     embeddings = new GoogleGenerativeAIEmbeddings({
         apiKey,
-        model: "gemini-embedding-001",
+        model: process.env.EMBEDDING_MODEL || "gemini-embedding-001",
     });
 
     return embeddings;

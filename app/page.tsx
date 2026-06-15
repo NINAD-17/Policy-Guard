@@ -1,17 +1,25 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useEffect, Suspense } from "react";
 import Link from "next/link";
-import { useRouter } from "next/navigation";
+import { useRouter, useSearchParams } from "next/navigation";
 import { ShieldCheck, ArrowRight, Sparkles, X, Loader2 } from "lucide-react";
 import { useSession, signIn } from "@/lib/auth-client";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 
-export default function Home() {
+function HomeContent() {
     const { data: session, isPending } = useSession();
     const router = useRouter();
+    const searchParams = useSearchParams();
     const [showModal, setShowModal] = useState(false);
+
+    // Auto-open login modal when redirected from proxy with ?login=true
+    useEffect(() => {
+        if (searchParams.get("login") === "true" && !session) {
+            setShowModal(true);
+        }
+    }, [searchParams, session]);
     
     // Login form state
     const [email, setEmail] = useState("");
@@ -30,7 +38,7 @@ export default function Home() {
                 setLoading(false);
                 return;
             }
-            router.push("/dashboard");
+            router.push(searchParams.get("callbackUrl") || "/dashboard");
         } catch {
             setError("Something went wrong. Please try again.");
             setLoading(false);
@@ -50,7 +58,7 @@ export default function Home() {
                 setLoading(false);
                 return;
             }
-            router.push("/dashboard");
+            router.push(searchParams.get("callbackUrl") || "/dashboard");
         } catch {
             setError("Something went wrong with guest login.");
             setLoading(false);
@@ -192,5 +200,13 @@ export default function Home() {
                 </div>
             )}
         </div>
+    );
+}
+
+export default function Home() {
+    return (
+        <Suspense>
+            <HomeContent />
+        </Suspense>
     );
 }

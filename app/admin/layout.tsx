@@ -1,6 +1,5 @@
 "use client";
 
-import { useRouter } from "next/navigation";
 import { signOut, useSession } from "@/lib/auth-client";
 import { Button } from "@/components/ui/button";
 import { ShieldCheck, LogOut } from "lucide-react";
@@ -10,12 +9,11 @@ export default function AdminLayout({
 }: {
     children: React.ReactNode;
 }) {
-    const router = useRouter();
     const { data: session } = useSession();
 
     const handleLogout = async () => {
         await signOut();
-        router.push("/login");
+        window.location.href = "/";
     };
 
     return (

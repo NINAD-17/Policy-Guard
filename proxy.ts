@@ -4,33 +4,26 @@ import type { NextRequest } from "next/server";
 // Routes that require authentication
 const protectedRoutes = ["/admin", "/dashboard"];
 
-// Routes that are only for non-authenticated users
-const authRoutes = ["/login"];
-
 export function proxy(request: NextRequest) {
     const { pathname } = request.nextUrl;
 
     // Get the session token from cookies
-    // better-auth uses this cookie name by default
-    const sessionToken = request.cookies.get(
-        "better-auth.session_token"
-    )?.value;
+    // better-auth uses "better-auth.session_token" in dev (http),
+    // and "__Secure-better-auth.session_token" in production (https)
+    const sessionToken =
+        request.cookies.get("better-auth.session_token")?.value ||
+        request.cookies.get("__Secure-better-auth.session_token")?.value;
 
     const isProtectedRoute = protectedRoutes.some((route) =>
         pathname.startsWith(route)
     );
-    const isAuthRoute = authRoutes.some((route) => pathname.startsWith(route));
 
-    // Redirect to login if accessing protected route without session
+    // Redirect to landing page with login modal if accessing protected route without session
     if (isProtectedRoute && !sessionToken) {
-        const loginUrl = new URL("/login", request.url);
+        const loginUrl = new URL("/", request.url);
+        loginUrl.searchParams.set("login", "true");
         loginUrl.searchParams.set("callbackUrl", pathname);
         return NextResponse.redirect(loginUrl);
-    }
-
-    // Redirect to dashboard if accessing auth routes with active session
-    if (isAuthRoute && sessionToken) {
-        return NextResponse.redirect(new URL("/dashboard", request.url));
     }
 
     return NextResponse.next();

@@ -15,13 +15,14 @@ import {
     PlayCircle,
     Menu,
     X,
+    Settings,
 } from "lucide-react";
 import { cn } from "@/lib/utils";
 
 export function Sidebar() {
     const pathname = usePathname();
     const { data: session } = useSession();
-    const [profile, setProfile] = useState<{ department: string } | null>(null);
+    const [profile, setProfile] = useState<{ department: string; role: string } | null>(null);
     const [mobileOpen, setMobileOpen] = useState(false);
 
     useEffect(() => {
@@ -87,6 +88,25 @@ export function Sidebar() {
                     );
                 })}
             </nav>
+
+            {/* Admin Controls — only visible for admin role */}
+            {profile?.role === "admin" && (
+                <div className="px-4 pb-2">
+                    <Link
+                        href="/admin"
+                        onClick={() => setMobileOpen(false)}
+                        className={cn(
+                            "flex items-center gap-3 px-3 py-2.5 rounded-xl transition-all duration-300",
+                            pathname.startsWith("/admin")
+                                ? "glass-panel shadow-md text-primary border-primary/20 bg-primary/10"
+                                : "text-muted-foreground hover:bg-primary/10 hover:text-primary"
+                        )}
+                    >
+                        <Settings className="h-5 w-5" />
+                        <span className="font-medium text-sm">Admin Controls</span>
+                    </Link>
+                </div>
+            )}
 
             {/* Profile + Logout */}
             <div className="p-4 mt-auto">

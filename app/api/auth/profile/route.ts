@@ -11,7 +11,10 @@ export async function GET(request: NextRequest) {
             return NextResponse.json({ error: "Profile not found" }, { status: 404 });
         }
         
-        return NextResponse.json(profile);
+        return NextResponse.json({
+            department: profile.department,
+            role: profile.role,
+        });
     } catch (error) {
         if (error instanceof Response) return error;
         return NextResponse.json({ error: "Internal Server Error" }, { status: 500 });

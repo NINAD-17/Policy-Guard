@@ -12,9 +12,12 @@ export async function GET() {
         const profile = await getUserProfile(session.user.id);
         const role = profile?.role;
 
+        const isGuest = session.user.email === "guest@policypulse.dev";
+
         let filter = {};
-        if (role !== "admin") {
+        if (role !== "admin" && !isGuest) {
             // Employees can only see global docs or docs matching their department
+            // Admin and Guest users can see all documents
             filter = {
                 $or: [
                     { scope: "global" },

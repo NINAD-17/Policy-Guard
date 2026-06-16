@@ -18,13 +18,15 @@ export const vectorSearchTool = createTool({
             .describe("The optimized search query to find relevant SOP content"),
     }),
     handler: async ({ searchQuery }, { network }) => {
-        const department = network?.state.data?.department as string;
+        const state = network?.state.data;
+        const department = state?.department as string;
+        const role = (state?.role as string) || "employee";
 
         // Generate embedding for the search query
         const queryEmbedding = await generateEmbedding(searchQuery);
 
         // MongoDB Atlas Vector Search with scope filtering + $lookup for doc titles
-        const results = await vectorSearchSOPChunks(queryEmbedding, department, 8);
+        const results = await vectorSearchSOPChunks(queryEmbedding, role, department, 8);
 
         if (results.length === 0) {
             return "No relevant SOP content found for this query.";

@@ -35,6 +35,7 @@ export async function POST(request: NextRequest) {
                 employeeId: session.user.id,
                 employeeName: session.user.name,
                 department: profile.department,
+                role: profile.role,
                 query: parsed.data.query,
                 text: parsed.data.text,
                 sessionId: session.session.id,

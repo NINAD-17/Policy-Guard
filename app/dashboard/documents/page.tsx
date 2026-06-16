@@ -1,9 +1,15 @@
 "use client";
 
-import { useState, useEffect } from "react";
+import { useEffect } from "react";
 import { ShieldCheck, FileText, ExternalLink, Loader2 } from "lucide-react";
 import { toast } from "sonner";
 import { DocumentSearch } from "@/components/document-search";
+import useSWR from "swr";
+
+const fetcher = (url: string) => fetch(url).then((res) => {
+    if (!res.ok) throw new Error("Failed to fetch");
+    return res.json();
+});
 
 interface Document {
     _id: string;
@@ -15,25 +21,17 @@ interface Document {
 }
 
 export default function DocumentsPage() {
-    const [documents, setDocuments] = useState<Document[]>([]);
-    const [loading, setLoading] = useState(true);
+    const { data: allDocuments = [], isLoading: loading, error } = useSWR<Document[]>("/api/documents", fetcher, {
+        revalidateOnFocus: true // automatically fetch updates when tab is focused
+    });
 
     useEffect(() => {
-        async function fetchDocuments() {
-            try {
-                const res = await fetch("/api/documents");
-                if (res.ok) {
-                    const data = await res.json();
-                    setDocuments(data.filter((d: Document) => d.status === "active"));
-                }
-            } catch {
-                toast.error("Failed to fetch documents");
-            } finally {
-                setLoading(false);
-            }
+        if (error) {
+            toast.error("Failed to fetch documents");
         }
-        fetchDocuments();
-    }, []);
+    }, [error]);
+
+    const documents = allDocuments.filter((d) => d.status === "active");
 
     const handleViewPDF = async (docId: string) => {
         try {

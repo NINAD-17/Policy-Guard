@@ -1,63 +1,50 @@
 "use client";
 
-import { useState, useEffect, useCallback, useRef } from "react";
+import { useState, useEffect, useRef } from "react";
 import { AuditFeed } from "@/components/audit-feed";
 import { ChatInput } from "@/components/chat-input";
 import { Separator } from "@/components/ui/separator";
 import { ShieldCheck } from "lucide-react";
 import { toast } from "sonner";
 import type { AuditLogEntry } from "@/components/audit-card";
+import useSWR from "swr";
+
+const fetcher = (url: string) => fetch(url).then((res) => {
+    if (!res.ok) throw new Error("Failed to fetch");
+    return res.json();
+});
 
 export default function DashboardPage() {
-    const [logs, setLogs] = useState<AuditLogEntry[]>([]);
-    const [loading, setLoading] = useState(true);
     const [processing, setProcessing] = useState(false);
-    const pollRef = useRef<NodeJS.Timeout | null>(null);
     const logCountRef = useRef(0);
 
-    const fetchLogs = useCallback(async () => {
-        try {
-            const res = await fetch("/api/audit-logs?limit=50");
-            if (res.ok) {
-                const data = await res.json();
-                setLogs(data.logs);
-                return data.logs.length;
-            }
-        } catch {
-            console.error("Failed to fetch audit logs");
+    const { data, isLoading: loading, error } = useSWR(
+        "/api/audit-logs?limit=50",
+        fetcher,
+        {
+            refreshInterval: processing ? 5000 : 0, // Automatically poll every 5s if processing
+            revalidateOnFocus: true
         }
-        return 0;
-    }, []);
+    );
 
-    // Initial load
+    const logs: AuditLogEntry[] = data?.logs || [];
+
+    // Track when new logs arrive to stop processing
     useEffect(() => {
-        fetchLogs().then((count) => {
-            logCountRef.current = count;
-            setLoading(false);
-        });
-    }, [fetchLogs]);
-
-    // Polling while processing
-    useEffect(() => {
-        if (processing) {
-            pollRef.current = setInterval(async () => {
-                const newCount = await fetchLogs();
-                if (newCount > logCountRef.current) {
-                    // New result arrived
-                    logCountRef.current = newCount;
-                    setProcessing(false);
-                    toast.success("Audit report ready!");
-                }
-            }, 5000); // Poll every 5 seconds
-        }
-
-        return () => {
-            if (pollRef.current) {
-                clearInterval(pollRef.current);
-                pollRef.current = null;
+        if (logs.length > 0) {
+            if (processing && logs.length > logCountRef.current) {
+                setProcessing(false);
+                toast.success("Audit report ready!");
             }
-        };
-    }, [processing, fetchLogs]);
+            logCountRef.current = logs.length;
+        }
+    }, [logs, processing]);
+
+    useEffect(() => {
+        if (error) {
+            toast.error("Failed to fetch audit logs");
+        }
+    }, [error]);
 
     const handleSubmit = async (query: string, text: string) => {
         setProcessing(true);

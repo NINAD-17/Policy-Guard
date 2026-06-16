@@ -3,6 +3,12 @@
 import { useState, useEffect, useRef } from "react";
 import { Search, Loader2, FileText, ExternalLink } from "lucide-react";
 import { toast } from "sonner";
+import useSWR from "swr";
+
+const fetcher = (url: string) => fetch(url).then(res => {
+    if (!res.ok) throw new Error("Failed to fetch");
+    return res.json();
+});
 
 interface SearchResult {
     documentId: string;
@@ -13,8 +19,6 @@ interface SearchResult {
 
 export function DocumentSearch() {
     const [query, setQuery] = useState("");
-    const [results, setResults] = useState<SearchResult[]>([]);
-    const [loading, setLoading] = useState(false);
     const [isOpen, setIsOpen] = useState(false);
     const searchRef = useRef<HTMLDivElement>(null);
 
@@ -25,49 +29,20 @@ export function DocumentSearch() {
         return () => clearTimeout(timer);
     }, [query]);
 
-    useEffect(() => {
-        let ignore = false;
-        const controller = new AbortController();
-
-        async function fetchResults() {
-            if (!debouncedQuery.trim()) {
-                setResults([]);
-                return;
-            }
-
-            setLoading(true);
-            try {
-                const res = await fetch(`/api/documents/search?q=${encodeURIComponent(debouncedQuery)}`, {
-                    signal: controller.signal
-                });
-                if (res.ok) {
-                    const data = await res.json();
-                    if (!ignore) {
-                        setResults(data);
-                    }
-                } else if (!ignore) {
-                    toast.error("Failed to search documents");
-                }
-            } catch (err: any) {
-                if (err.name === "AbortError") {
-                    console.log("Fetch aborted");
-                } else if (!ignore) {
-                    toast.error("Failed to search documents");
-                }
-            } finally {
-                if (!ignore) {
-                    setLoading(false);
-                }
-            }
+    const { data: results = [], isLoading: loading, error } = useSWR<SearchResult[]>(
+        debouncedQuery.trim() ? `/api/documents/search?q=${encodeURIComponent(debouncedQuery)}` : null,
+        fetcher,
+        {
+            keepPreviousData: true,
+            revalidateOnFocus: false
         }
+    );
 
-        fetchResults();
-
-        return () => {
-            ignore = true;
-            controller.abort();
-        };
-    }, [debouncedQuery]);
+    useEffect(() => {
+        if (error) {
+            toast.error("Failed to search documents");
+        }
+    }, [error]);
 
     // Close on click outside
     useEffect(() => {

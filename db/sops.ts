@@ -79,7 +79,6 @@ export async function vectorSearchSOPChunks(queryEmbedding: number[], role: stri
         };
     }
 
-    console.debug("results getting...", searchStage);
     const results = await db.collection(COLLECTIONS.SOP_CHUNKS).aggregate([
         {
             $vectorSearch: searchStage,

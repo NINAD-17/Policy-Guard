@@ -58,25 +58,31 @@ export async function deleteSOPChunks(documentId: string | ObjectId): Promise<vo
     await db.collection(COLLECTIONS.SOP_CHUNKS).deleteMany({ documentId: docId });
 }
 
-export async function vectorSearchSOPChunks(queryEmbedding: number[], department: string, limit: number = 8) {
+export async function vectorSearchSOPChunks(queryEmbedding: number[], role: string, department: string | undefined, limit: number = 8) {
     const client = await clientPromise;
     const db = client.db();
 
+    const searchStage: Record<string, unknown> = {
+        index: "vector_index",
+        path: "embedding",
+        queryVector: queryEmbedding,
+        numCandidates: 100,
+        limit: limit,
+    };
+
+    if (role !== "admin" && department) {
+        searchStage.filter = {
+            $or: [
+                { scope: "global" },
+                { departments: department },
+            ],
+        };
+    }
+
+    console.debug("results getting...", searchStage);
     const results = await db.collection(COLLECTIONS.SOP_CHUNKS).aggregate([
         {
-            $vectorSearch: {
-                index: "vector_index",
-                path: "embedding",
-                queryVector: queryEmbedding,
-                numCandidates: 100,
-                limit: limit,
-                filter: {
-                    $or: [
-                        { scope: "global" },
-                        { departments: department },
-                    ],
-                },
-            },
+            $vectorSearch: searchStage,
         },
         {
             $lookup: {

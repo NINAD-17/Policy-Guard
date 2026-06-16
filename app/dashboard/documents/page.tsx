@@ -3,6 +3,7 @@
 import { useState, useEffect } from "react";
 import { ShieldCheck, FileText, ExternalLink, Loader2 } from "lucide-react";
 import { toast } from "sonner";
+import { DocumentSearch } from "@/components/document-search";
 
 interface Document {
     _id: string;
@@ -46,19 +47,12 @@ export default function DocumentsPage() {
     };
 
     return (
-        <div className="flex-1 flex flex-col w-full relative overflow-y-auto">
+        <div className="flex-1 flex flex-col w-full h-full relative">
             {/* Header */}
-            {/* <div className="sticky top-0 p-6 pl-16 md:pl-6 z-10 glass-panel border-x-0 border-t-0 rounded-none flex items-center gap-3">
-                <div>
-                    <h1 className="text-xl font-bold tracking-tight bg-gradient-to-br from-foreground to-foreground/70 bg-clip-text text-transparent">
-                        SOP Documents
-                    </h1>
-                    <p className="text-xs text-muted-foreground mt-0.5">Reference your organization's active policies</p>
-                </div>
-            </div> */}
+            {/* ... */}
 
             {/* Document Grid */}
-            <div className="pt-20 px-6 lg:p-6">
+            <div className="flex-1 overflow-y-auto pt-20 px-6 lg:p-6 relative">
                 {loading ? (
                     <div className="flex justify-center items-center h-40">
                         <Loader2 className="h-8 w-8 animate-spin text-primary/50" />
@@ -117,7 +111,10 @@ export default function DocumentsPage() {
                         ))}
                     </div>
                 )}
+                {/* Add padding at bottom to avoid overlap with floating search bar */}
+                <div className="h-24 shrink-0 w-full" />
             </div>
+            <DocumentSearch />
         </div>
     );
 }

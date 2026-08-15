@@ -1,17 +1,14 @@
 import { NextRequest, NextResponse } from "next/server";
-import { getSession } from "@/lib/session";
+import { requireSession } from "@/lib/session";
 import { chatInputSchema } from "@/lib/types";
 import { inngest } from "@/inngest/client";
 import { getUserProfile } from "@/db/users";
 
 // POST /api/chat — submit a compliance audit query
-// Triggers the Inngest compliance-audit function (built in Phase 3)
+// Triggers the Inngest compliance-audit function
 export async function POST(request: NextRequest) {
     try {
-        const session = await getSession();
-        if (!session) {
-            return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
-        }
+        const session = await requireSession();
 
         const profile = await getUserProfile(session.user.id);
         if (!profile) {

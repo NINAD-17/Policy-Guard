@@ -58,6 +58,39 @@ export async function deleteSOPChunks(documentId: string | ObjectId): Promise<vo
     await db.collection(COLLECTIONS.SOP_CHUNKS).deleteMany({ documentId: docId });
 }
 
+export async function getSOPChunksByDocumentId(
+    documentId: string | ObjectId,
+    skip: number = 0,
+    limit: number = 20
+): Promise<SOPChunk[]> {
+    const client = await clientPromise;
+    const db = client.db();
+    const docId = typeof documentId === "string" ? new ObjectId(documentId) : documentId;
+    const chunks = await db
+        .collection(COLLECTIONS.SOP_CHUNKS)
+        .find({ documentId: docId })
+        .sort({ chunkIndex: 1 })
+        .skip(skip)
+        .limit(limit)
+        .toArray();
+    return chunks as unknown as SOPChunk[];
+}
+
+export async function updateSOPChunkEmbeddings(
+    updates: { id: ObjectId; embedding: number[] }[]
+): Promise<void> {
+    if (!updates.length) return;
+    const client = await clientPromise;
+    const db = client.db();
+    const bulkOps = updates.map((u) => ({
+        updateOne: {
+            filter: { _id: u.id },
+            update: { $set: { embedding: u.embedding } },
+        },
+    }));
+    await db.collection(COLLECTIONS.SOP_CHUNKS).bulkWrite(bulkOps);
+}
+
 export async function vectorSearchSOPChunks(
     queryEmbedding: number[],
     role: string,

@@ -3,8 +3,6 @@
 import { useState, useEffect, useRef } from "react";
 import { AuditFeed } from "@/components/audit-feed";
 import { ChatInput } from "@/components/chat-input";
-import { Separator } from "@/components/ui/separator";
-import { ShieldCheck } from "lucide-react";
 import { toast } from "sonner";
 import type { AuditLogEntry } from "@/components/audit-card";
 import useSWR from "swr";

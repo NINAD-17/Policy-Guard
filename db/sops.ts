@@ -58,7 +58,12 @@ export async function deleteSOPChunks(documentId: string | ObjectId): Promise<vo
     await db.collection(COLLECTIONS.SOP_CHUNKS).deleteMany({ documentId: docId });
 }
 
-export async function vectorSearchSOPChunks(queryEmbedding: number[], role: string, department: string | undefined, limit: number = 8) {
+export async function vectorSearchSOPChunks(
+    queryEmbedding: number[],
+    role: string,
+    department: string | undefined,
+    limit: number = 8
+) {
     const client = await clientPromise;
     const db = client.db();
 

@@ -29,8 +29,19 @@ export function DocumentSearch() {
         return () => clearTimeout(timer);
     }, [query]);
 
+    // Fetch profile once (deduped/cached via SWR)
+    const { data: profile } = useSWR<{ role: string; department: string }>("/api/auth/profile", fetcher, {
+        revalidateOnFocus: false,
+        dedupingInterval: 60000,
+    });
+
+    const roleParam = profile?.role ? `&role=${encodeURIComponent(profile.role)}` : "";
+    const deptParam = profile?.department ? `&department=${encodeURIComponent(profile.department)}` : "";
+
     const { data: results = [], isLoading: loading, error } = useSWR<SearchResult[]>(
-        debouncedQuery.trim() ? `/api/documents/search?q=${encodeURIComponent(debouncedQuery)}` : null,
+        debouncedQuery.trim()
+            ? `/api/documents/search?q=${encodeURIComponent(debouncedQuery)}${roleParam}${deptParam}`
+            : null,
         fetcher,
         {
             keepPreviousData: true,

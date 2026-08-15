@@ -1,5 +1,5 @@
 import { NextRequest, NextResponse } from "next/server";
-import { getSession, requireAdmin } from "@/lib/session";
+import { requireAdmin, requireSession } from "@/lib/session";
 import { deleteFromS3 } from "@/lib/s3";
 import { getSOPDocument, deleteSOPDocument, deleteSOPChunks } from "@/db/sops";
 import { getUserProfile } from "@/db/users";
@@ -12,10 +12,7 @@ interface RouteParams {
 // GET /api/documents/[id] — get a single document
 export async function GET(request: NextRequest, { params }: RouteParams) {
     try {
-        const session = await getSession();
-        if (!session) {
-            return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
-        }
+        const session = await requireSession();
 
         const { id } = await params;
         if (!ObjectId.isValid(id)) {

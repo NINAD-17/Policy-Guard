@@ -1,7 +1,6 @@
 import { NextResponse } from "next/server";
 import { requireSession } from "@/lib/session";
 import { vectorSearchSOPChunks } from "@/db/sops";
-import { getUserProfile } from "@/db/users";
 import { generateEmbedding } from "@/lib/embeddings";
 
 export async function GET(request: Request) {
@@ -14,16 +13,18 @@ export async function GET(request: Request) {
             return NextResponse.json([]);
         }
 
-        const profile = await getUserProfile(session.user.id);
-        const role = profile?.role || "employee";
-        const department = profile?.department;
+        const role = searchParams.get("role") || "employee";
+        const department = searchParams.get("department") || searchParams.get("dept") || undefined;
+        const isGuest = session.user.email === "guest@policypulse.dev";
+
+        // Admin and Guest users can search across all documents in Document Search
+        const searchRole = (role === "admin" || isGuest) ? "admin" : role;
 
         // Generate embedding for query
         const queryEmbedding = await generateEmbedding(query);
-        console.debug("Query Embedding: ", queryEmbedding);
 
         // Perform vector search
-        const chunks = await vectorSearchSOPChunks(queryEmbedding, role, department, 20);
+        const chunks = await vectorSearchSOPChunks(queryEmbedding, searchRole, department, 20);
 
         // Group by documentId and keep the most relevant chunk
         const docMap = new Map();

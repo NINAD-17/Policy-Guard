@@ -32,20 +32,20 @@ export const vectorSearchTool = createTool({
             return "No relevant SOP content found for this query.";
         }
 
-        // Store source metadata in network state for the Grader to use later
-        const existingSources = (network?.state.data?.sourceDocuments as any[]) || [];
+        // Store source chunk metadata in network state for Formatter / Save tool
+        const existingSources = (network?.state.data?.sourceChunks as any[]) || [];
         const startIndex = existingSources.length;
 
-        const newSourceDocuments = results.map((r, i) => ({
+        const newSourceChunks = results.map((r, i) => ({
             index: startIndex + i + 1,
             documentTitle: r.documentTitle as string,
             documentId: (r.documentId as ObjectId).toString(),
             pageNumber: r.pageNumber as number | undefined,
         }));
 
-        // Save to network state so Grader can access it
+        // Save to network state so Formatter / Save tool can access it
         if (network?.state.data) {
-            network.state.data.sourceDocuments = [...existingSources, ...newSourceDocuments];
+            network.state.data.sourceChunks = [...existingSources, ...newSourceChunks];
         }
 
         // Format output with document metadata for the Auditor

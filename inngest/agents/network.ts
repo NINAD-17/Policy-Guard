@@ -2,66 +2,101 @@ import { createNetwork } from "@inngest/agent-kit";
 import { routerAgent } from "./router";
 import { retrieverAgent } from "./retriever";
 import { auditorAgent } from "./auditor";
-import { graderAgent } from "./grader";
+import { formatterAgent } from "./formatter";
+import { explainerAgent } from "./explainer";
 
-// Network with intent-based routing:
-// 1. Router  → classifies intent (chitchat vs compliance_audit) using cheap model
-// 2. If compliance_audit: Retriever → Auditor → Grader → done
-// 3. If chitchat: stop immediately — compliance-audit.ts saves a lightweight log
+// Dynamic State-Driven Compliance Network:
+// 1. Router Agent classifies intent into: chitchat, compliance_audit, sop_search, sop_explanation.
+// 2. chitchat → stop immediately (compliance-audit.ts saves friendly log).
+// 3. compliance_audit → Retriever → Auditor → (if low confidence: Retriever → Auditor) → Formatter → done.
+// 4. sop_explanation → Retriever → Explainer → done.
+// 5. sop_search → Retriever → stop (compliance-audit.ts saves document search log).
 export function createComplianceNetwork() {
     return createNetwork({
         name: "compliance-audit-network",
-        agents: [routerAgent, retrieverAgent, auditorAgent, graderAgent],
-        maxIter: 5, // Router(1) + Retriever(1) + Auditor(1) + Grader(1) + safety buffer(1)
+        agents: [routerAgent, retrieverAgent, auditorAgent, formatterAgent, explainerAgent],
+        maxIter: 10, // Safety buffer for multi-agent loops including re-retrieval
         router: ({ network, lastResult, callCount }) => {
+            const state = network?.state.data;
 
-            // ── Call 0: Always start with the Router (cheap classifier) ──
+            // ── Call 0: Always start with the Router (classifier) ──
             if (callCount === 0) {
                 return routerAgent;
             }
 
-            // ── Call 1: Read Router output and route accordingly ──
+            // ── Call 1: Read Router output & save intent to state ──
             if (callCount === 1) {
-                // Parse the router's JSON output and save intent to state
                 const routerTextMsg = lastResult?.output?.find(
                     (msg: { type: string }) => msg.type === "text"
                 );
                 if (routerTextMsg && "content" in routerTextMsg) {
                     try {
                         const parsed = JSON.parse(routerTextMsg.content as string);
-                        // Save intent and response to state for compliance-audit.ts to read
-                        if (network?.state.data) {
-                            network.state.data.intent = parsed.intent;
-                            network.state.data.routerResponse = parsed.response || null;
+                        if (state) {
+                            state.intent = parsed.intent;
+                            state.routerResponse = parsed.response || null;
                         }
                         if (parsed.intent === "chitchat") {
-                            return undefined; // Stop — compliance-audit.ts handles the save
+                            return undefined; // Stop — compliance-audit.ts saves chitchat log
                         }
                     } catch {
-                        // If JSON parse fails, assume it needs a full audit to be safe
-                        if (network?.state.data) {
-                            network.state.data.intent = "compliance_audit";
+                        if (state) {
+                            state.intent = "compliance_audit";
                         }
                     }
                 }
-                // It's a compliance audit → run Retriever
+                // All other intents (compliance_audit, sop_search, sop_explanation) require Retriever
                 return retrieverAgent;
             }
 
-            // ── Call 2: Retriever ran → now run Auditor ──
-            if (callCount === 2) {
+            // ── Call > 1: State-driven routing based on previous agent ──
+            const lastAgentName = lastResult?.agentName;
+
+            if (lastAgentName === "Retriever") {
+                const intent = state?.intent;
+                if (intent === "compliance_audit") {
+                    return auditorAgent;
+                }
+                if (intent === "sop_explanation") {
+                    return explainerAgent;
+                }
+                if (intent === "sop_search") {
+                    // Stop — compliance-audit.ts handles saving the search result log
+                    return undefined;
+                }
+                // Default fallback
                 return auditorAgent;
             }
 
-            // ── Call 3: Auditor ran → now run Grader ──
-            if (callCount === 3) {
-                return graderAgent;
+            if (lastAgentName === "Auditor") {
+                // Check if Auditor requested re-retrieval due to low confidence (< 0.5)
+                const auditorText = lastResult?.output?.find(
+                    (msg: { type: string }) => msg.type === "text"
+                );
+                if (auditorText && "content" in auditorText) {
+                    try {
+                        const parsed = JSON.parse(auditorText.content as string);
+                        const retryCount = (state?.retrieverRetryCount as number) || 0;
+                        if (parsed.needsMoreContext && parsed.refinedQuery && retryCount < 1) {
+                            if (state) {
+                                state.auditorRefinedQuery = parsed.refinedQuery;
+                                state.retrieverRetryCount = retryCount + 1;
+                            }
+                            // Re-retrieve with RRF forced via auditor's refined query
+                            return retrieverAgent;
+                        }
+                    } catch {
+                        // If JSON parse fails, fall through to Formatter
+                    }
+                }
+                return formatterAgent;
             }
 
-            // ── Call 4: Grader ran → check if it saved the report ──
-            // If Grader called save_audit_log (tool call present) → done
-            // If Grader had no tool call → it returned text corrections, stop anyway
-            // (Correction loop removed — Grader is trusted to validate and save directly)
+            if (lastAgentName === "Formatter" || lastAgentName === "Explainer") {
+                // Done — log was saved via save_audit_log tool
+                return undefined;
+            }
+
             return undefined;
         },
     });

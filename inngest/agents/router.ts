@@ -1,16 +1,16 @@
 import { createAgent, gemini } from "@inngest/agent-kit";
 
-// Router Agent: classifies the user's intent before running the full pipeline.
-// Uses gemini-2.0-flash-lite — the cheapest, fastest model — to minimize cost.
-// Outputs JSON with either:
+// Router Agent: classifies the user's intent before running the compliance network.
+// Uses gemini-2.5-flash-lite — the fast, cost-effective classifier.
+// Outputs JSON with one of 4 intents:
 //   { "intent": "chitchat", "response": "..." }
-//   { "intent": "compliance_audit" }
-// The network.ts router reads state.data.intent to decide what to run next.
+//   { "intent": "compliance_audit", "response": null }
+//   { "intent": "sop_search", "response": null }
+//   { "intent": "sop_explanation", "response": null }
 export const routerAgent = createAgent({
     name: "Router",
     description:
-        "Classifies the user query as either casual chitchat or a real compliance audit request. " +
-        "Always runs first to prevent unnecessary agent calls.",
+        "Classifies user query into 4 distinct intents: compliance_audit, sop_search, sop_explanation, or chitchat.",
     system: ({ network }) => {
         const state = network?.state.data;
         const firstName = (state?.employeeName as string)?.split(" ")[0] || "there";
@@ -24,22 +24,30 @@ CONTEXT:
 - Submitted work text: "${state?.text || "(none)"}"
 
 CLASSIFICATION RULES:
-- "compliance_audit": The user has submitted actual work, a process description, or a scenario to be audited against company SOPs. Examples: describing a code review they did, explaining how they handled a security incident, asking if a specific workflow follows policy.
-- "chitchat": Greetings, thanks, off-topic questions, vague questions with no auditable work provided, or anything that is NOT about evaluating specific work against SOPs. Examples: "Hello", "What can you do?", "Thanks", "What is a SOP?".
+- "compliance_audit": The user has submitted actual work, code, a process description, or a work scenario to be audited against company SOPs. Examples: describing a code review they did, explaining how they handled a security incident, pasting work text to check compliance.
+- "sop_search": The user specifically wants to find, locate, or list relevant SOP documents in the repository. Examples: "Find SOPs about data retention", "Search security documents", "Where is the remote work policy?".
+- "sop_explanation": The user wants an SOP policy, rule, or procedure explained in plain language, without submitting work to be audited. Examples: "What does our leave policy say about sick leaves?", "Explain the password policy", "How does expense reimbursement work?".
+- "chitchat": Greetings, thanks, off-topic questions, vague questions with no specific context, or meta questions about PolicyGuard. Examples: "Hello", "Thanks!", "What can you do?", "Is this okay?" (without context).
 
-IMPORTANT: If query is "Hello" or similar with no work text → ALWAYS "chitchat".
-If the user has provided a meaningful work description (even if short) → "compliance_audit".
+CRITICAL HEURISTIC:
+If the user submitted non-empty work text (more than a few words of work/code) → ALWAYS "compliance_audit".
 
 OUTPUT — respond with ONLY valid JSON, no markdown, no explanation:
 
 For chitchat:
-{"intent": "chitchat", "response": "A warm, helpful 1-2 sentence reply addressing ${firstName} by name. If it's a greeting, introduce what PolicyGuard does. If it's a question about SOPs, give a brief helpful answer. Keep it professional and friendly."}
+{"intent": "chitchat", "response": "A warm, helpful 1-2 sentence reply addressing ${firstName} by name. Introduce PolicyGuard or answer briefly."}
 
 For compliance audit:
-{"intent": "compliance_audit"}`;
+{"intent": "compliance_audit", "response": null}
+
+For SOP search:
+{"intent": "sop_search", "response": null}
+
+For SOP explanation:
+{"intent": "sop_explanation", "response": null}`;
     },
     model: gemini({
-        model: "gemini-2.0-flash-lite",
+        model: "gemini-2.5-flash-lite",
         apiKey: process.env.GOOGLE_GENERATIVE_AI_API_KEY,
     }),
     // No tools — pure classification, no side effects

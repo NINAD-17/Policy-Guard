@@ -43,12 +43,18 @@ interface AuditReportStructured {
     summary: string;
     findings: AuditFinding[];
     recommendations: string[];
+    relatedDocuments?: {
+        documentId: string;
+        documentTitle: string;
+        pageNumber?: number;
+    }[];
 }
 
 export interface AuditLogEntry {
     _id: string;
     userQuery: string;
     userText: string;
+    intent?: "compliance_audit" | "sop_search" | "sop_explanation" | "chitchat";
     auditReport: string | AuditReportStructured;
     confidenceScore: number;
     sourcesUsed: string[] | AuditSource[];
@@ -107,12 +113,49 @@ export function AuditCard({ log }: AuditCardProps) {
     // Cache presigned URLs per document ID
     const [urlCache, setUrlCache] = useState<Record<string, string>>({});
 
+    const intent = log.intent || "compliance_audit";
+    const showConfidence = intent === "compliance_audit";
+
     const config = statusConfig[log.status as keyof typeof statusConfig] || {
         icon: AlertTriangle,
         label: log.status,
         color: "bg-muted",
     };
-    const StatusIcon = config.icon;
+    
+    // Intent-specific header styling
+    const headerConfig = {
+        compliance_audit: {
+            icon: config.icon,
+            label: config.label,
+            color: config.color,
+            title: "PolicyGuard Audit",
+        },
+        sop_search: {
+            icon: FileText,
+            label: "SOP Search Results",
+            color: "bg-cyan-600",
+            title: "PolicyGuard Document Search",
+        },
+        sop_explanation: {
+            icon: Lightbulb,
+            label: "Policy Explanation",
+            color: "bg-amber-600",
+            title: "PolicyGuard Explainer",
+        },
+        chitchat: {
+            icon: MessageSquare,
+            label: "Assistant Response",
+            color: "bg-blue-600",
+            title: "PolicyGuard Assistant",
+        },
+    }[intent] || {
+        icon: config.icon,
+        label: config.label,
+        color: config.color,
+        title: "PolicyGuard Response",
+    };
+
+    const HeaderIcon = headerConfig.icon;
     const confidencePercent = Math.round(log.confidenceScore * 100);
 
     const report = log.auditReport;
@@ -188,42 +231,44 @@ export function AuditCard({ log }: AuditCardProps) {
             <div className="flex justify-start mt-2">
                 <div className="w-full md:max-w-[90%] glass-panel rounded-[2rem] rounded-tl-sm border-white/10 overflow-hidden relative shadow-[0_8px_40px_-12px_rgba(0,0,0,0.5)]">
                     {/* Subtle top gradient glow depending on status */}
-                    <div className={`absolute top-0 left-0 w-full h-1 ${config.color} opacity-80`} />
+                    <div className={`absolute top-0 left-0 w-full h-1 ${headerConfig.color} opacity-80`} />
                     
                     {/* Status + Confidence Header */}
                     <div className="px-6 py-5 border-b border-white/5 flex flex-col sm:flex-row sm:items-center justify-between gap-4 bg-background/5">
                         <div className="flex items-center gap-3">
-                            <div className={`p-2 rounded-2xl ${config.color} bg-opacity-20 backdrop-blur-md border border-white/5 shadow-inner`}>
-                                <StatusIcon className={`h-5 w-5 ${config.color.replace('bg-', 'text-')}`} />
+                            <div className={`p-2 rounded-2xl ${headerConfig.color} bg-opacity-20 backdrop-blur-md border border-white/5 shadow-inner`}>
+                                <HeaderIcon className={`h-5 w-5 ${headerConfig.color.replace('bg-', 'text-')}`} />
                             </div>
                             <div className="flex flex-col">
-                                <span className="text-xs font-semibold text-muted-foreground uppercase tracking-widest mb-0.5">PolicyGuard Audit</span>
-                                <div className={`inline-flex w-max items-center px-2.5 py-0.5 rounded-full text-sm font-semibold border ${config.color.replace('bg-', 'text-')} border-${config.color.replace('bg-', '')}/30 bg-${config.color.replace('bg-', '')}/10 shadow-sm`}>
-                                    {config.label}
+                                <span className="text-xs font-semibold text-muted-foreground uppercase tracking-widest mb-0.5">{headerConfig.title}</span>
+                                <div className={`inline-flex w-max items-center px-2.5 py-0.5 rounded-full text-sm font-semibold border ${headerConfig.color.replace('bg-', 'text-')} border-${headerConfig.color.replace('bg-', '')}/30 bg-${headerConfig.color.replace('bg-', '')}/10 shadow-sm`}>
+                                    {headerConfig.label}
                                 </div>
                             </div>
                         </div>
-                        <div className="flex items-center gap-3 bg-black/20 px-4 py-2 rounded-2xl border border-white/5 shadow-inner">
-                            <div className="text-[10px] font-bold text-muted-foreground uppercase tracking-wider">
-                                Confidence
+                        {showConfidence && (
+                            <div className="flex items-center gap-3 bg-black/20 px-4 py-2 rounded-2xl border border-white/5 shadow-inner">
+                                <div className="text-[10px] font-bold text-muted-foreground uppercase tracking-wider">
+                                    Confidence
+                                </div>
+                                <div className="w-24 h-2 bg-background/50 rounded-full overflow-hidden shadow-inner">
+                                    <div
+                                        className={`h-full rounded-full transition-all duration-1000 ${confidencePercent >= 80
+                                                ? "bg-emerald-500 shadow-[0_0_10px_rgba(16,185,129,0.5)]"
+                                                : confidencePercent >= 60
+                                                    ? "bg-yellow-500 shadow-[0_0_10px_rgba(234,179,8,0.5)]"
+                                                    : "bg-red-500 shadow-[0_0_10px_rgba(239,68,68,0.5)]"
+                                            }`}
+                                        style={{
+                                            width: `${confidencePercent}%`,
+                                        }}
+                                    />
+                                </div>
+                                <span className="text-sm font-mono font-bold text-foreground/90">
+                                    {confidencePercent}%
+                                </span>
                             </div>
-                            <div className="w-24 h-2 bg-background/50 rounded-full overflow-hidden shadow-inner">
-                                <div
-                                    className={`h-full rounded-full transition-all duration-1000 ${confidencePercent >= 80
-                                            ? "bg-emerald-500 shadow-[0_0_10px_rgba(16,185,129,0.5)]"
-                                            : confidencePercent >= 60
-                                                ? "bg-yellow-500 shadow-[0_0_10px_rgba(234,179,8,0.5)]"
-                                                : "bg-red-500 shadow-[0_0_10px_rgba(239,68,68,0.5)]"
-                                        }`}
-                                    style={{
-                                        width: `${confidencePercent}%`,
-                                    }}
-                                />
-                            </div>
-                            <span className="text-sm font-mono font-bold text-foreground/90">
-                                {confidencePercent}%
-                            </span>
-                        </div>
+                        )}
                     </div>
 
                     <div className="p-6 lg:p-8 space-y-8 bg-gradient-to-b from-background/5 to-transparent">
@@ -237,8 +282,42 @@ export function AuditCard({ log }: AuditCardProps) {
                                     </p>
                                 </div>
 
-                                {/* Findings */}
-                                {report.findings.length > 0 && (
+                                {/* Matched Documents for SOP Search */}
+                                {intent === "sop_search" && report.relatedDocuments && report.relatedDocuments.length > 0 && (
+                                    <div className="space-y-4">
+                                        <h4 className="text-xs font-bold text-muted-foreground uppercase tracking-widest flex items-center gap-2">
+                                            <div className="w-1.5 h-1.5 rounded-full bg-cyan-500/50" />
+                                            Matched SOP Documents
+                                        </h4>
+                                        <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+                                            {report.relatedDocuments.map((doc, i) => (
+                                                <button
+                                                    key={i}
+                                                    onClick={() => handleOpenSource(doc.documentId)}
+                                                    className="flex items-center gap-3 text-left group bg-white/[0.03] hover:bg-white/[0.08] border border-white/10 hover:border-cyan-500/30 rounded-2xl p-4 transition-all duration-300 shadow-md"
+                                                >
+                                                    <div className="p-3 bg-cyan-500/10 rounded-xl text-cyan-400 shrink-0 group-hover:scale-105 transition-transform">
+                                                        <FileText className="h-5 w-5" />
+                                                    </div>
+                                                    <div className="flex flex-col flex-1 min-w-0">
+                                                        <span className="text-sm font-semibold text-foreground/90 truncate">
+                                                            {doc.documentTitle}
+                                                        </span>
+                                                        {doc.pageNumber && (
+                                                            <span className="text-[11px] text-muted-foreground uppercase tracking-wide mt-0.5">
+                                                                Page {doc.pageNumber}
+                                                            </span>
+                                                        )}
+                                                    </div>
+                                                    <ExternalLink className="h-4 w-4 text-cyan-400 opacity-70 group-hover:opacity-100 transition-opacity shrink-0" />
+                                                </button>
+                                            ))}
+                                        </div>
+                                    </div>
+                                )}
+
+                                {/* Findings (only for compliance_audit) */}
+                                {intent === "compliance_audit" && report.findings.length > 0 && (
                                     <div className="space-y-4">
                                         <h4 className="text-xs font-bold text-muted-foreground uppercase tracking-widest flex items-center gap-2">
                                             <div className="w-1.5 h-1.5 rounded-full bg-primary/50" />
@@ -295,12 +374,12 @@ export function AuditCard({ log }: AuditCardProps) {
                                     </div>
                                 )}
 
-                                {/* Recommendations */}
+                                {/* Recommendations / Key Policy Takeaways */}
                                 {report.recommendations.length > 0 && (
                                     <div className="space-y-4">
                                         <h4 className="text-xs font-bold text-muted-foreground uppercase tracking-widest flex items-center gap-2">
                                             <div className="w-1.5 h-1.5 rounded-full bg-yellow-500/50" />
-                                            Recommendations
+                                            {intent === "sop_explanation" ? "Key Policy Takeaways" : "Recommendations"}
                                         </h4>
                                         <div className="bg-white/[0.02] border border-white/5 rounded-3xl p-6">
                                             <ul className="space-y-3">

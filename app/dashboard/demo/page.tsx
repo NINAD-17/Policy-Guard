@@ -7,12 +7,97 @@ import { ShieldCheck, PlayCircle } from "lucide-react";
 import { toast } from "sonner";
 import type { AuditLogEntry } from "@/components/audit-card";
 
-// Hardcoded demo data
+// Hardcoded demo data showcasing all agent intents
 const DEMO_LOGS: AuditLogEntry[] = [
+    {
+        _id: "demo-chitchat",
+        userQuery: "Hello PolicyGuard! How can you help me today?",
+        userText: "",
+        intent: "chitchat",
+        confidenceScore: 1.0,
+        status: "compliant",
+        tags: ["chitchat"],
+        createdAt: new Date(Date.now() - 1000 * 60 * 60 * 5).toISOString(),
+        sourcesUsed: [],
+        auditReport: {
+            summary: "Hello! I'm PolicyGuard, your autonomous AI compliance assistant. You can ask me to search SOP documents, explain specific company policies in plain language, or submit descriptions of your work for automated compliance auditing.",
+            findings: [],
+            recommendations: [],
+        },
+    },
+    {
+        _id: "demo-sop-search",
+        userQuery: "Find SOP documents related to data retention and remote access policy.",
+        userText: "",
+        intent: "sop_search",
+        confidenceScore: 0.95,
+        status: "compliant",
+        tags: ["sop-search", "Data Retention", "Security"],
+        createdAt: new Date(Date.now() - 1000 * 60 * 60 * 4).toISOString(),
+        sourcesUsed: [
+            {
+                index: 1,
+                documentTitle: "Data Retention & Archival SOP",
+                documentId: "demo-doc-1",
+                pageNumber: 1,
+            },
+            {
+                index: 2,
+                documentTitle: "Remote Work Security & Access Policy",
+                documentId: "demo-doc-2",
+                pageNumber: 3,
+            },
+        ],
+        auditReport: {
+            summary: "Found 2 relevant SOP documents matching your query on data retention and remote access guidelines.",
+            findings: [],
+            recommendations: [],
+            relatedDocuments: [
+                {
+                    documentId: "demo-doc-1",
+                    documentTitle: "Data Retention & Archival SOP",
+                    pageNumber: 1,
+                },
+                {
+                    documentId: "demo-doc-2",
+                    documentTitle: "Remote Work Security & Access Policy",
+                    pageNumber: 3,
+                },
+            ],
+        },
+    },
+    {
+        _id: "demo-sop-explanation",
+        userQuery: "Can you explain our password security policy and how often we must rotate credentials?",
+        userText: "",
+        intent: "sop_explanation",
+        confidenceScore: 0.96,
+        status: "compliant",
+        tags: ["sop-explanation", "Security", "Credentials"],
+        createdAt: new Date(Date.now() - 1000 * 60 * 60 * 3).toISOString(),
+        sourcesUsed: [
+            {
+                index: 1,
+                documentTitle: "Enterprise Identity & Access Management SOP",
+                documentId: "demo-doc-3",
+                pageNumber: 4,
+            },
+        ],
+        auditReport: {
+            summary: "Our Enterprise Identity & Access Management policy requires all employee accounts to use strong passphrases combined with multi-factor authentication (MFA). Master database and cloud API keys must be rotated every 90 days or immediately upon suspected exposure.",
+            findings: [],
+            recommendations: [
+                "Passwords must be at least 16 characters long and stored in an approved password manager.",
+                "MFA must be enforced via authenticator app or hardware token (SMS authentication is disallowed).",
+                "API keys and service tokens must be rotated automatically every 90 days or within 1 hour of any accidental public exposure.",
+            ],
+        },
+    },
     {
         _id: "demo-1",
         userQuery: "Does my code review process follow the company SOP?",
         userText: "I usually quickly scan the code for syntax errors. I didn't run any tests. My review took about 5 minutes. No other reviewer was involved.",
+        intent: "compliance_audit",
         confidenceScore: 0.95,
         status: "non_compliant",
         tags: ["Code Review", "SOP Compliance", "Engineering Process"],
@@ -30,51 +115,26 @@ const DEMO_LOGS: AuditLogEntry[] = [
                 documentId: "dummy-id-1",
                 pageNumber: 3,
             },
-            {
-                index: 3,
-                documentTitle: "Engineering Code Review Guidelines",
-                documentId: "dummy-id-1",
-                pageNumber: 4,
-            },
-            {
-                index: 4,
-                documentTitle: "Engineering Code Review Guidelines",
-                documentId: "dummy-id-1",
-                pageNumber: 5,
-            }
         ],
         auditReport: {
-            summary: "Hi there, after reviewing your submitted code review process, it appears there are several areas where your approach deviates from our established Standard Operating Procedures. This report outlines these observations to help you align with the company's guidelines and enhance the quality of your reviews.",
+            summary: "Hi there, after reviewing your submitted code review process, it appears there are several areas where your approach deviates from our established Standard Operating Procedures. This report outlines these observations to help you align with the company's guidelines.",
             findings: [
                 {
                     title: "Insufficient Review Depth",
-                    description: "Your statement about 'quickly scanning the code for syntax errors' indicates a narrower focus than what our SOP outlines. The Code Review Guidelines expect reviewers to examine code for logic, security, style, correctness, maintainability, and consistency, which goes beyond just syntax checks.",
+                    description: "Your statement about 'quickly scanning the code for syntax errors' indicates a narrower focus than what our SOP outlines. Code Review Guidelines require checking logic, security, and maintainability.",
                     status: "non_compliant",
-                    sopReferences: [1, 2, 4],
+                    sopReferences: [1],
                 },
                 {
                     title: "Lack of Test Verification",
-                    description: "You mentioned that you 'didn't run any tests.' While the SOP primarily places the responsibility for ensuring test coverage on the author, a thorough review often involves verifying that automated tests pass.",
+                    description: "You mentioned that you 'didn't run any tests.' The SOP expects reviewers to verify that automated test suites pass prior to approval.",
                     status: "non_compliant",
-                    sopReferences: [4],
+                    sopReferences: [2],
                 },
-                {
-                    title: "Inadequate Review Duration",
-                    description: "Your 5-minute review duration for a pull request is generally insufficient to thoroughly cover all the checks mandated by our guidelines.",
-                    status: "non_compliant",
-                    sopReferences: [1, 2, 3, 4],
-                },
-                {
-                    title: "Single Reviewer Process",
-                    description: "Your statement 'No other reviewer was involved' is compliant with the provided SOP content, as it does not explicitly mandate multiple reviewers for a pull request.",
-                    status: "compliant",
-                    sopReferences: [1],
-                }
             ],
             recommendations: [
-                "You might want to broaden your code review focus beyond syntax errors to include logic, security, style, correctness, and maintainability.",
-                "Consider incorporating a step to verify test coverage and ensure all automated tests pass as part of your review process.",
-                "Allocate sufficient time for each code review to thoroughly address all aspects of the review checklist.",
+                "Broaden code review focus beyond syntax errors to include logic, security, style, and maintainability.",
+                "Incorporate a step to verify test coverage and ensure all automated tests pass as part of your review process.",
             ],
         },
     },
@@ -82,13 +142,14 @@ const DEMO_LOGS: AuditLogEntry[] = [
         _id: "demo-2",
         userQuery: "We had a production data leak. Does our incident response follow the SOP?",
         userText: "An engineer accidentally committed an AWS secret key to a public GitHub repo. The key was active for 24 hours. We deleted the repo but didn't rotate the key immediately. We didn't inform the security officer yet because it was a weekend.",
+        intent: "compliance_audit",
         confidenceScore: 0.98,
         status: "needs_review",
         tags: ["Security Incident", "SOP Compliance", "Data Protection"],
         createdAt: new Date(Date.now() - 1000 * 60 * 60 * 1).toISOString(),
         escalated: true,
         escalatedToName: "Sneha Deshmukh",
-        escalationMessage: "The engineering team failed to rotate compromised API credentials within the mandatory 1-hour window and failed to report a Grade-1 security incident to the Chief Security Officer immediately. This represents a severe risk and has been escalated to the department head Sneha Deshmukh for immediate intervention.",
+        escalationMessage: "The engineering team failed to rotate compromised API credentials within the mandatory 1-hour window and failed to report a Grade-1 security incident to the Chief Security Officer immediately. Escalated to department head Sneha Deshmukh for intervention.",
         sourcesUsed: [
             {
                 index: 1,
@@ -96,33 +157,20 @@ const DEMO_LOGS: AuditLogEntry[] = [
                 documentId: "dummy-id-2",
                 pageNumber: 1,
             },
-            {
-                index: 2,
-                documentTitle: "Enterprise Security Incident Response Protocol",
-                documentId: "dummy-id-2",
-                pageNumber: 3,
-            }
         ],
         auditReport: {
-            summary: "Critical compliance failure identified regarding incident response protocols. Immediate action is required to rotate compromised credentials and notify the security officer. Due to the high risk level, this case has been escalated.",
+            summary: "Critical compliance failure identified regarding incident response protocols. Immediate action is required to rotate compromised credentials and notify the security officer. Due to high severity, this case has been escalated.",
             findings: [
                 {
                     title: "Delayed Credential Rotation",
-                    description: "The compromised AWS secret key was left active for 24 hours. The Security Incident Response SOP mandates credential rotation within 1 hour of breach detection.",
+                    description: "The compromised AWS secret key was left active for 24 hours. SOP mandates credential rotation within 1 hour of breach detection.",
                     status: "non_compliant",
                     sopReferences: [1],
                 },
-                {
-                    title: "Failure to Report Incident",
-                    description: "The security incident was not reported to the Security Officer. All credential leaks must be reported immediately, regardless of when they occur (including weekends).",
-                    status: "non_compliant",
-                    sopReferences: [2],
-                }
             ],
             recommendations: [
                 "Rotate the compromised AWS secret key immediately.",
-                "Notify the Chief Security Officer (CSO) and request a credential audit log analysis.",
-                "Conduct a post-mortem to determine why credential detection did not trigger automatic rotation."
+                "Notify the Chief Security Officer (CSO) and request credential audit log analysis.",
             ],
         },
     },

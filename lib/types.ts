@@ -83,6 +83,11 @@ export interface AuditReportStructured {
     summary: string;
     findings: AuditFinding[];
     recommendations: string[];
+    relatedDocuments?: {
+        documentId: string;
+        documentTitle: string;
+        pageNumber?: number;
+    }[];
 }
 
 export interface AuditLog {
@@ -92,6 +97,7 @@ export interface AuditLog {
     department: string;
     userQuery: string;
     userText: string;
+    intent?: "compliance_audit" | "sop_search" | "sop_explanation" | "chitchat";
     // Union type: old logs are plain string (markdown), new logs are structured JSON
     auditReport: string | AuditReportStructured;
     confidenceScore: number;

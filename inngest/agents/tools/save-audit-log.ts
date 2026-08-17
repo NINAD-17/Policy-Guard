@@ -43,9 +43,21 @@ export const saveAuditLogTool = createTool({
             .describe("Topic tags for this audit (e.g. 'code-review', 'safety')"),
         escalated: z.boolean().optional(),
         escalationMessage: z.string().optional(),
+        intent: z
+            .enum(["compliance_audit", "sop_search", "sop_explanation", "chitchat"])
+            .optional(),
+        relatedDocuments: z
+            .array(
+                z.object({
+                    documentId: z.string(),
+                    documentTitle: z.string(),
+                    pageNumber: z.number().optional(),
+                })
+            )
+            .optional(),
     }),
     handler: async (
-        { summary, overallStatus, confidenceScore, findings, recommendations, tags, escalated, escalationMessage },
+        { summary, overallStatus, confidenceScore, findings, recommendations, tags, escalated, escalationMessage, intent, relatedDocuments },
         { network }
     ) => {
         const state = network?.state.data;
@@ -55,11 +67,12 @@ export const saveAuditLogTool = createTool({
             summary,
             findings,
             recommendations,
+            relatedDocuments,
         };
 
-        // Get source documents from network state (set by the Retriever)
+        // Get source chunk metadata from network state (set by the Retriever)
         const sourcesUsed: AuditSource[] =
-            (state?.sourceDocuments as AuditSource[]) || [];
+            (state?.sourceChunks as AuditSource[]) || [];
 
         // Look up manager info if escalated
         let escalatedToId: string | undefined = undefined;
@@ -86,6 +99,7 @@ export const saveAuditLogTool = createTool({
             department: state?.department as string,
             userQuery: state?.query as string,
             userText: state?.text as string,
+            intent: intent || (state?.intent as any) || "compliance_audit",
             auditReport,
             confidenceScore,
             sourcesUsed,

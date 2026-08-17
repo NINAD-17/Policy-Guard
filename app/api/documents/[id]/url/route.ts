@@ -1,6 +1,6 @@
 import { NextRequest, NextResponse } from "next/server";
 import { requireSession } from "@/lib/session";
-import { getPresignedUrl } from "@/lib/s3";
+import { getFileUrl } from "@/lib/storage";
 import { getSOPDocument } from "@/db/sops";
 import { getUserProfile } from "@/db/users";
 import { ObjectId } from "mongodb";
@@ -45,7 +45,7 @@ export async function GET(request: NextRequest, { params }: RouteParams) {
             }
         }
 
-        const url = await getPresignedUrl(doc.s3Key);
+        const url = await getFileUrl(doc.s3Key);
 
         return NextResponse.json({ url, expiresIn: 3600 });
     } catch (error) {

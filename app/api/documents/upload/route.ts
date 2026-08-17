@@ -1,7 +1,7 @@
 import { NextRequest, NextResponse } from "next/server";
 import { requireAdmin } from "@/lib/session";
 import { createSOPDocument } from "@/db/sops";
-import { uploadToS3 } from "@/lib/s3";
+import { uploadFile } from "@/lib/storage";
 import { inngest } from "@/inngest/client";
 import { sopDocumentSchema } from "@/lib/types";
 import type { SOPDocument } from "@/lib/types";
@@ -45,10 +45,10 @@ export async function POST(request: NextRequest) {
             );
         }
 
-        // Upload PDF to S3
+        // Upload PDF to cloud storage (S3 or Cloudinary)
         const buffer = Buffer.from(await file.arrayBuffer());
         const s3Key = `sops/${Date.now()}-${file.name}`;
-        await uploadToS3(s3Key, buffer);
+        await uploadFile(s3Key, buffer);
 
         // Create document record in MongoDB
         const documentId = await createSOPDocument({

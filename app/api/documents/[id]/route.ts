@@ -1,6 +1,6 @@
 import { NextRequest, NextResponse } from "next/server";
 import { requireAdmin, requireSession } from "@/lib/session";
-import { deleteFromS3 } from "@/lib/s3";
+import { deleteFile } from "@/lib/storage";
 import { getSOPDocument, deleteSOPDocument, deleteSOPChunks } from "@/db/sops";
 import { getUserProfile } from "@/db/users";
 import { ObjectId } from "mongodb";
@@ -66,8 +66,8 @@ export async function DELETE(request: NextRequest, { params }: RouteParams) {
             return NextResponse.json({ error: "Document not found" }, { status: 404 });
         }
 
-        // Delete from S3
-        await deleteFromS3(doc.s3Key);
+        // Delete from cloud storage (S3 or Cloudinary)
+        await deleteFile(doc.s3Key);
 
         // Delete chunks
         await deleteSOPChunks(id);

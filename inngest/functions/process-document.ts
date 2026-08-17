@@ -1,5 +1,5 @@
 import { inngest } from "../client";
-import { downloadFromS3 } from "@/lib/s3";
+import { downloadFile } from "@/lib/storage";
 import { generateEmbeddings } from "@/lib/embeddings";
 import {
     deleteSOPChunks,
@@ -41,7 +41,7 @@ export const processDocument = inngest.createFunction(
         const { totalChunks } = await step.run(
             "download-and-extract-chunks",
             async () => {
-                const buffer = await downloadFromS3(s3Key);
+                const buffer = await downloadFile(s3Key);
                 const tempPath = join(
                     tmpdir(),
                     `sop-${documentId}-${Date.now()}.pdf`

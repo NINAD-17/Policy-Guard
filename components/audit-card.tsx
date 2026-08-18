@@ -418,7 +418,7 @@ export function AuditCard({ log }: AuditCardProps) {
                                         <div className="pt-2">
                                             <button
                                                 onClick={() => setSourcesExpanded(!sourcesExpanded)}
-                                                className="flex items-center gap-2 text-xs font-semibold uppercase tracking-wider text-muted-foreground hover:text-foreground transition-colors bg-white/5 hover:bg-white/10 px-4 py-2 rounded-full border border-white/5"
+                                                className="flex items-center gap-2 text-xs font-semibold uppercase tracking-wider text-muted-foreground hover:text-foreground transition-colors bg-white/5 hover:bg-white/10 px-4 py-2 rounded-full border border-white/5 cursor-pointer"
                                             >
                                                 <FileText className="h-3.5 w-3.5" />
                                                 <span>Sources ({uniqueSources.length})</span>
@@ -434,7 +434,7 @@ export function AuditCard({ log }: AuditCardProps) {
                                                         <button
                                                             key={idx}
                                                             onClick={() => handleOpenSource(source.documentId)}
-                                                            className="flex items-center gap-3 text-left group bg-black/20 hover:bg-white/5 border border-white/5 rounded-2xl p-3 transition-all duration-300"
+                                                            className="flex items-center gap-3 text-left group bg-black/20 hover:bg-white/5 border border-white/5 rounded-2xl p-3 transition-all duration-300 cursor-pointer"
                                                         >
                                                             <div className="p-2 bg-primary/10 rounded-xl text-primary shrink-0 group-hover:scale-110 transition-transform">
                                                                 <FileText className="h-4 w-4" />

@@ -25,6 +25,10 @@ export async function POST(request: NextRequest) {
             );
         }
 
+        // Sanitize and cap input lengths to prevent token exhaustion
+        const query = parsed.data.query.trim().slice(0, 500);
+        const text = (parsed.data.text || "").trim().slice(0, 10000);
+
         // Send event to Inngest to trigger the compliance audit pipeline
         await inngest.send({
             name: "audit/query.submitted",
@@ -33,8 +37,8 @@ export async function POST(request: NextRequest) {
                 employeeName: session.user.name,
                 department: profile.department,
                 role: profile.role,
-                query: parsed.data.query,
-                text: parsed.data.text,
+                query,
+                text,
                 sessionId: session.session.id,
                 isGuest: session.user.email === "guest@policypulse.dev",
             },

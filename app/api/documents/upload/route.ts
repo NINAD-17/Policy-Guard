@@ -18,9 +18,18 @@ export async function POST(request: NextRequest) {
         const scope = formData.get("scope") as string;
         const departmentsRaw = formData.get("departments") as string;
 
-        if (!file || !file.name.endsWith(".pdf")) {
+        const MAX_FILE_SIZE = 10 * 1024 * 1024; // 10MB limit
+
+        if (!file || (!file.name.toLowerCase().endsWith(".pdf") && file.type !== "application/pdf")) {
             return NextResponse.json(
-                { error: "A PDF file is required" },
+                { error: "A valid PDF file is required" },
+                { status: 400 }
+            );
+        }
+
+        if (file.size > MAX_FILE_SIZE) {
+            return NextResponse.json(
+                { error: "File size exceeds maximum allowed limit of 10MB" },
                 { status: 400 }
             );
         }

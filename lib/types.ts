@@ -90,6 +90,13 @@ export interface AuditReportStructured {
     }[];
 }
 
+export interface TokenUsage {
+    promptTokens: number;
+    completionTokens: number;
+    totalTokens: number;
+    estimatedCostUSD: number;
+}
+
 export interface AuditLog {
     _id?: ObjectId;
     employeeId: string;
@@ -105,6 +112,7 @@ export interface AuditLog {
     sourcesUsed: string[] | AuditSource[];
     status: "processing" | "compliant" | "non_compliant" | "needs_review";
     currentStep?: string; // Live status message of current agent (e.g. "Retriever Agent searching SOP chunks...")
+    tokenUsage?: TokenUsage; // Estimated token consumption & USD cost
     tags: string[];
     escalated: boolean;
     escalatedToId?: string;

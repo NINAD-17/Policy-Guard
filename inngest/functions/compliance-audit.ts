@@ -70,6 +70,15 @@ export const complianceAudit = inngest.createFunction(
                 const routerResponse = (finalState?.routerResponse as string) ||
                     "Hi! I'm your compliance assistant. Submit a description of your work and I'll check it against company SOPs.";
 
+                const { calculateEstimatedTokens } = await import("@/lib/token-calculator");
+                const tokenUsage = calculateEstimatedTokens({
+                    query,
+                    text,
+                    sourcesCount: 0,
+                    responseLength: routerResponse.length,
+                    intent: "chitchat",
+                });
+
                 await updateAuditLog(auditLogId, {
                     $set: {
                         intent: "chitchat",
@@ -81,6 +90,7 @@ export const complianceAudit = inngest.createFunction(
                         confidenceScore: 1.0,
                         sourcesUsed: [],
                         status: "compliant",
+                        tokenUsage,
                         tags: ["chitchat"],
                     },
                     $unset: { currentStep: "" },
@@ -111,6 +121,15 @@ export const complianceAudit = inngest.createFunction(
                     ? `Found ${relatedDocuments.length} relevant SOP document(s) matching your query.`
                     : "No matching SOP documents found for your search query.";
 
+                const { calculateEstimatedTokens } = await import("@/lib/token-calculator");
+                const tokenUsage = calculateEstimatedTokens({
+                    query,
+                    text,
+                    sourcesCount: rawSources.length,
+                    responseLength: searchSummary.length,
+                    intent: "sop_search",
+                });
+
                 await updateAuditLog(auditLogId, {
                     $set: {
                         intent: "sop_search",
@@ -123,6 +142,7 @@ export const complianceAudit = inngest.createFunction(
                         confidenceScore: 0.9,
                         sourcesUsed: rawSources,
                         status: "compliant",
+                        tokenUsage,
                         tags: ["sop-search"],
                     },
                     $unset: { currentStep: "" },

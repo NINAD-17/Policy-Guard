@@ -93,6 +93,15 @@ export const saveAuditLogTool = createTool({
             }
         }
 
+        const { calculateEstimatedTokens } = await import("@/lib/token-calculator");
+        const tokenUsage = calculateEstimatedTokens({
+            query: (state?.query as string) || "",
+            text: (state?.text as string) || "",
+            sourcesCount: sourcesUsed.length,
+            responseLength: summary.length,
+            intent: intent || (state?.intent as any) || "compliance_audit",
+        });
+
         const auditLogEntry: AuditLog = {
             employeeId: state?.employeeId as string,
             employeeName: state?.employeeName as string,
@@ -104,6 +113,7 @@ export const saveAuditLogTool = createTool({
             confidenceScore,
             sourcesUsed,
             status: overallStatus,
+            tokenUsage,
             tags,
             escalated: escalated || false,
             escalatedToId,

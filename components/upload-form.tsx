@@ -94,7 +94,7 @@ export function UploadForm({ onUploadSuccess }: UploadFormProps) {
     };
 
     return (
-        <Card className="glass-panel bg-card/45 backdrop-blur-xl border-white/10 shadow-[0_12px_40px_-10px_rgba(0,0,0,0.5)] rounded-[2rem] p-4 md:p-6 transition-all duration-300">
+        <Card className="glass-panel bg-card/45 backdrop-blur-xl border-white/10 shadow-[0_12px_40px_-10px_rgba(0,0,0,0.5)] rounded-[2rem] p-4 md:p-6 transition-all duration-300 w-full max-w-full overflow-hidden">
             <CardHeader className="pb-4">
                 <CardTitle className="flex items-center gap-2 text-xl font-bold tracking-tight">
                     <Upload className="h-5 w-5 text-primary" />
@@ -106,7 +106,7 @@ export function UploadForm({ onUploadSuccess }: UploadFormProps) {
                     auditing.
                 </CardDescription>
             </CardHeader>
-            <CardContent>
+            <CardContent className="px-0 sm:px-6">
                 <form onSubmit={handleSubmit} className="space-y-5">
                     <div className="grid grid-cols-1 md:grid-cols-2 gap-5">
                         <div className="space-y-2">
@@ -128,14 +128,14 @@ export function UploadForm({ onUploadSuccess }: UploadFormProps) {
                                 onValueChange={setScope}
                                 disabled={loading}
                             >
-                                <SelectTrigger id="scope" className="bg-background/50 border-white/10 h-12 rounded-xl px-4 focus-visible:ring-1 focus-visible:ring-white/20 transition-colors">
+                                <SelectTrigger id="scope" className="bg-background/50 border-white/10 h-12 rounded-xl px-4 focus-visible:ring-1 focus-visible:ring-white/20 transition-colors cursor-pointer">
                                     <SelectValue />
                                 </SelectTrigger>
                                 <SelectContent className="glass-panel bg-card/95 border-white/15 rounded-xl">
-                                    <SelectItem value="global" className="hover:bg-white/5 focus:bg-white/5 rounded-lg">
+                                    <SelectItem value="global" className="hover:bg-white/5 focus:bg-white/5 rounded-lg cursor-pointer">
                                         Global (all departments)
                                     </SelectItem>
-                                    <SelectItem value="department-specific" className="hover:bg-white/5 focus:bg-white/5 rounded-lg">
+                                    <SelectItem value="department-specific" className="hover:bg-white/5 focus:bg-white/5 rounded-lg cursor-pointer">
                                         Department-specific
                                     </SelectItem>
                                 </SelectContent>
@@ -161,8 +161,8 @@ export function UploadForm({ onUploadSuccess }: UploadFormProps) {
                                         disabled={loading}
                                         className={
                                             departments.includes(dept)
-                                                ? "bg-primary text-primary-foreground rounded-full px-4 h-9 shadow-md transition-all font-medium"
-                                                : "border-white/10 hover:bg-white/5 text-muted-foreground hover:text-foreground rounded-full px-4 h-9 transition-all font-medium"
+                                                ? "bg-primary text-primary-foreground rounded-full px-4 h-9 shadow-md transition-all font-medium cursor-pointer"
+                                                : "border-white/10 hover:bg-white/5 text-muted-foreground hover:text-foreground rounded-full px-4 h-9 transition-all font-medium cursor-pointer"
                                         }
                                     >
                                         {dept}
@@ -188,7 +188,7 @@ export function UploadForm({ onUploadSuccess }: UploadFormProps) {
 
                     <div className="space-y-2">
                         <Label htmlFor="file" className="text-xs font-semibold text-muted-foreground uppercase tracking-wider ml-1">PDF File</Label>
-                        <div className="flex items-center gap-3">
+                        <div className="flex flex-col sm:flex-row items-stretch sm:items-center gap-3">
                             <Input
                                 id="file"
                                 type="file"
@@ -198,7 +198,7 @@ export function UploadForm({ onUploadSuccess }: UploadFormProps) {
                                     setFile(e.target.files?.[0] || null)
                                 }
                                 disabled={loading}
-                                className="flex-1 bg-background/50 border-white/10 h-12 rounded-xl px-4 focus-visible:ring-1 focus-visible:ring-white/20 file:mr-4 file:py-1 file:px-3 file:rounded-full file:border-0 file:text-xs file:font-semibold file:bg-primary/20 file:text-primary hover:file:bg-primary/30 file:cursor-pointer transition-colors"
+                                className="flex-1 bg-background/50 border-white/10 h-12 rounded-xl px-4 focus-visible:ring-1 focus-visible:ring-white/20 file:mr-2 file:py-1 file:px-3 file:rounded-full file:border-0 file:text-xs file:font-semibold file:bg-primary/20 file:text-primary hover:file:bg-primary/30 file:cursor-pointer transition-colors max-w-full cursor-pointer"
                             />
                             {file && (
                                 <div className="flex items-center gap-2 text-sm text-muted-foreground bg-white/5 border border-white/5 rounded-xl px-3 h-12 animate-in fade-in zoom-in-95 duration-200">

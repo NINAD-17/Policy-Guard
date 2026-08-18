@@ -62,31 +62,31 @@ export default function DocumentsPage() {
                         <p className="text-sm text-muted-foreground mt-1">You don't have access to any active SOPs right now.</p>
                     </div>
                 ) : (
-                    <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
+                    <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-3 sm:gap-6">
                         {documents.map((doc) => (
                             <button
                                 key={doc._id}
                                 onClick={() => handleViewPDF(doc._id)}
-                                className="group relative flex flex-col text-left glass-panel rounded-2xl overflow-hidden hover:shadow-[0_8px_30px_-10px_rgba(var(--primary),0.2)] transition-all duration-300 hover:-translate-y-1"
+                                className="group relative flex flex-row sm:flex-col items-center sm:items-stretch text-left glass-panel rounded-2xl overflow-hidden hover:shadow-[0_8px_30px_-10px_rgba(var(--primary),0.2)] transition-all duration-300 hover:-translate-y-0.5 sm:hover:-translate-y-1 cursor-pointer p-3 sm:p-0 border-white/10"
                             >
                                 {/* Thumbnail Area */}
-                                <div className="aspect-[4/3] w-full bg-muted/30 relative flex items-center justify-center overflow-hidden border-b border-white/5">
+                                <div className="w-20 h-20 sm:w-full sm:h-auto sm:aspect-[4/3] rounded-xl sm:rounded-none bg-muted/30 relative flex items-center justify-center overflow-hidden border border-white/10 sm:border-0 sm:border-b sm:border-white/5 shrink-0">
                                     {doc.thumbnailUrl ? (
                                         // eslint-disable-next-line @next/next/no-img-element
                                         <img 
                                             src={doc.thumbnailUrl} 
                                             alt={doc.title} 
-                                            className="w-full h-full object-cover opacity-80 group-hover:opacity-100 group-hover:scale-105 transition-all duration-500"
+                                            className="w-full h-full object-cover opacity-90 group-hover:opacity-100 group-hover:scale-105 transition-all duration-500"
                                         />
                                     ) : (
                                         <div className="w-full h-full bg-gradient-to-br from-primary/5 to-primary/20 flex flex-col items-center justify-center relative">
                                             <div className="absolute inset-0 bg-grid-white/5 bg-[size:10px_10px]" />
-                                            <FileText className="h-12 w-12 text-primary/40 relative z-10" />
+                                            <FileText className="h-8 w-8 sm:h-12 sm:w-12 text-primary/40 relative z-10" />
                                         </div>
                                     )}
                                     
-                                    {/* Hover Overlay */}
-                                    <div className="absolute inset-0 bg-background/40 backdrop-blur-[2px] opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center">
+                                    {/* Hover Overlay (Desktop) */}
+                                    <div className="hidden sm:flex absolute inset-0 bg-background/40 backdrop-blur-[2px] opacity-0 group-hover:opacity-100 transition-opacity items-center justify-center">
                                         <div className="bg-primary text-primary-foreground px-4 py-2 rounded-full text-sm font-medium flex items-center gap-2 shadow-lg transform translate-y-4 group-hover:translate-y-0 transition-all duration-300">
                                             View PDF <ExternalLink className="h-4 w-4" />
                                         </div>
@@ -94,15 +94,16 @@ export default function DocumentsPage() {
                                 </div>
                                 
                                 {/* Info Area */}
-                                <div className="p-4 flex-1 flex flex-col justify-between w-full">
-                                    <h3 className="font-semibold text-foreground/90 line-clamp-2 leading-snug mb-3">
+                                <div className="p-1 sm:p-4 flex-1 flex flex-col justify-between w-full min-w-0 pl-3 sm:pl-4">
+                                    <h3 className="font-semibold text-xs sm:text-base text-foreground/90 line-clamp-2 leading-tight sm:leading-snug mb-1.5 sm:mb-3">
                                         {doc.title}
                                     </h3>
                                     
                                     <div className="flex items-center justify-between mt-auto">
-                                        <span className="inline-flex items-center px-2.5 py-0.5 rounded-full text-[10px] font-medium bg-primary/10 text-primary border border-primary/20 capitalize">
+                                        <span className="inline-flex items-center px-2 py-0.5 rounded-full text-[10px] font-medium bg-primary/10 text-primary border border-primary/20 capitalize">
                                             {doc.scope === "global" ? "Global Policy" : "Departmental"}
                                         </span>
+                                        <ExternalLink className="h-3.5 w-3.5 text-muted-foreground sm:hidden group-hover:text-primary transition-colors shrink-0 ml-2" />
                                     </div>
                                 </div>
                             </button>

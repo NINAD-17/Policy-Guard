@@ -76,7 +76,7 @@ export function Sidebar() {
                             href={item.href}
                             onClick={() => setMobileOpen(false)}
                             className={cn(
-                                "flex items-center gap-3 px-3 py-2.5 rounded-xl transition-all duration-300",
+                                "flex items-center gap-3 px-3 py-2.5 rounded-xl transition-all duration-300 cursor-pointer",
                                 isActive
                                     ? "glass-panel shadow-md text-foreground border-white/10"
                                     : "text-muted-foreground hover:bg-white/5 hover:text-foreground"
@@ -89,21 +89,23 @@ export function Sidebar() {
                 })}
             </nav>
 
-            {/* Admin Controls — only visible for admin role */}
-            {profile?.role === "admin" && (
+            {/* Admin Controls / Analytics — visible for admin role or guest demo */}
+            {(profile?.role === "admin" || session?.user?.email === "guest@policypulse.dev") && (
                 <div className="px-4 pb-2">
                     <Link
                         href="/admin"
                         onClick={() => setMobileOpen(false)}
                         className={cn(
-                            "flex items-center gap-3 px-3 py-2.5 rounded-xl transition-all duration-300",
+                            "flex items-center gap-3 px-3 py-2.5 rounded-xl transition-all duration-300 cursor-pointer",
                             pathname.startsWith("/admin")
                                 ? "glass-panel shadow-md text-primary border-primary/20 bg-primary/10"
                                 : "text-muted-foreground hover:bg-primary/10 hover:text-primary"
                         )}
                     >
                         <Settings className="h-5 w-5" />
-                        <span className="font-medium text-sm">Admin Controls</span>
+                        <span className="font-medium text-sm">
+                            {profile?.role === "admin" ? "Admin Controls" : "Admin Analytics"}
+                        </span>
                     </Link>
                 </div>
             )}
@@ -127,7 +129,7 @@ export function Sidebar() {
                     <Button
                         variant="ghost"
                         size="icon"
-                        className="h-8 w-8 shrink-0 text-muted-foreground hover:text-destructive hover:bg-destructive/20 rounded-full transition-colors"
+                        className="h-8 w-8 shrink-0 text-muted-foreground hover:text-destructive hover:bg-destructive/20 rounded-full transition-colors cursor-pointer"
                         onClick={handleLogout}
                         title="Logout"
                     >
@@ -144,7 +146,7 @@ export function Sidebar() {
             <Button
                 variant="ghost"
                 size="icon"
-                className="lg:hidden fixed top-4 left-4 z-50 h-12 w-12 glass-panel rounded-full text-foreground hover:text-primary transition-colors"
+                className="lg:hidden fixed top-4 left-4 z-50 h-12 w-12 rounded-full bg-white/15 hover:bg-white/25 backdrop-blur-xl border border-white/20 hover:border-primary/40 text-foreground hover:text-primary shadow-[0_8px_32px_rgba(0,0,0,0.6),0_0_20px_rgba(var(--primary),0.3)] transition-all duration-300 hover:scale-105 active:scale-95 cursor-pointer"
                 onClick={() => setMobileOpen(!mobileOpen)}
             >
                 {mobileOpen ? <X className="h-6 w-6" /> : <Menu className="h-6 w-6" />}

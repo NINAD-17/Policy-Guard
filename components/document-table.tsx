@@ -99,8 +99,8 @@ export function DocumentTable({
 
     return (
         <>
-            <Card className="glass-panel bg-card/45 backdrop-blur-xl border-white/10 shadow-[0_12px_40px_-10px_rgba(0,0,0,0.5)] rounded-[2rem] p-4 md:p-6 mt-6 transition-all duration-300">
-                <CardHeader className="pb-4">
+            <Card className="glass-panel bg-card/45 backdrop-blur-xl border-white/10 shadow-[0_12px_40px_-10px_rgba(0,0,0,0.5)] rounded-[2rem] p-4 md:p-6 mt-6 transition-all duration-300 w-full max-w-full overflow-hidden">
+                <CardHeader className="pb-4 px-0 sm:px-6">
                     <CardTitle className="flex items-center gap-2 text-xl font-bold tracking-tight">
                         <FileText className="h-5 w-5 text-primary" />
                         SOP Documents
@@ -110,7 +110,7 @@ export function DocumentTable({
                         {documents.length !== 1 ? "s" : ""} uploaded
                     </CardDescription>
                 </CardHeader>
-                <CardContent>
+                <CardContent className="px-0 sm:px-6">
                     {loading ? (
                         <div className="space-y-3">
                             {[1, 2, 3].map((i) => (
@@ -126,23 +126,23 @@ export function DocumentTable({
                             upload your first SOP.
                         </p>
                     ) : (
-                        <div className="space-y-1">
+                        <div className="space-y-1 w-full max-w-full overflow-hidden">
                             {documents.map((doc, i) => (
                                 <div key={doc._id}>
-                                    <div className="flex items-center justify-between py-4 px-3 rounded-2xl hover:bg-white/5 transition-all duration-300 group">
-                                        <div className="flex-1 min-w-0">
-                                            <div className="flex items-center gap-2.5 mb-1.5">
-                                                <h3 className="font-semibold text-sm truncate text-foreground/90">
+                                    <div className="flex items-center justify-between py-4 px-2 sm:px-3 rounded-2xl hover:bg-white/5 transition-all duration-300 group">
+                                        <div className="flex-1 min-w-0 pr-2">
+                                            <div className="flex items-center gap-2.5 mb-1.5 flex-wrap">
+                                                <h3 className="font-semibold text-sm truncate text-foreground/90 max-w-[200px] sm:max-w-none">
                                                     {doc.title}
                                                 </h3>
                                                 {statusBadge(doc.status)}
                                             </div>
-                                            <div className="flex items-center gap-4 text-xs text-muted-foreground/80">
+                                            <div className="flex items-center gap-4 text-xs text-muted-foreground/80 flex-wrap">
                                                 <span className="flex items-center gap-1.5 font-medium">
                                                     {doc.scope === "global" ? (
-                                                        <Globe className="h-3.5 w-3.5 text-primary" />
+                                                        <Globe className="h-3.5 w-3.5 text-primary shrink-0" />
                                                     ) : (
-                                                        <Building2 className="h-3.5 w-3.5 text-primary" />
+                                                        <Building2 className="h-3.5 w-3.5 text-primary shrink-0" />
                                                     )}
                                                     {doc.scope === "global"
                                                         ? "Global"
@@ -160,7 +160,7 @@ export function DocumentTable({
                                         <Button
                                             variant="ghost"
                                             size="icon"
-                                            className="h-9 w-9 text-muted-foreground hover:text-destructive hover:bg-destructive/10 rounded-full transition-all duration-300 opacity-80 group-hover:opacity-100"
+                                            className="h-9 w-9 text-muted-foreground hover:text-destructive hover:bg-destructive/10 rounded-full transition-all duration-300 opacity-80 group-hover:opacity-100 cursor-pointer shrink-0"
                                             onClick={() =>
                                                 setDeleteId(doc._id)
                                             }

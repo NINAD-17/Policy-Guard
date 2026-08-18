@@ -33,3 +33,17 @@ export async function getAuditLog(id: string | ObjectId): Promise<AuditLog | nul
     const log = await db.collection(COLLECTIONS.AUDIT_LOGS).findOne({ _id: logId });
     return log as unknown as AuditLog | null;
 }
+
+export async function updateAuditLog(
+    id: string | ObjectId,
+    updates: Record<string, unknown>
+): Promise<void> {
+    const client = await clientPromise;
+    const db = client.db();
+    const logId = typeof id === "string" ? new ObjectId(id) : id;
+    const isPipeline = "$unset" in updates || "$set" in updates;
+    await db.collection(COLLECTIONS.AUDIT_LOGS).updateOne(
+        { _id: logId },
+        isPipeline ? updates : { $set: updates }
+    );
+}

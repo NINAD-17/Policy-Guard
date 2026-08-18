@@ -101,7 +101,7 @@ export async function vectorSearchSOPChunks(
     const db = client.db();
 
     const searchStage: Record<string, unknown> = {
-        index: "vector_index",
+        index: "policy-guard-vector-index",
         path: "embedding",
         queryVector: queryEmbedding,
         numCandidates: 100,

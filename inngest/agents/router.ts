@@ -47,7 +47,7 @@ For SOP explanation:
 {"intent": "sop_explanation", "response": null}`;
     },
     model: gemini({
-        model: "gemini-2.5-flash-lite",
+        model: process.env.GEMINI_LITE_MODEL || "gemini-2.5-flash-lite",
         apiKey: process.env.GOOGLE_GENERATIVE_AI_API_KEY,
     }),
     // No tools — pure classification, no side effects

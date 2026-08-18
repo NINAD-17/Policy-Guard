@@ -39,7 +39,7 @@ INSTRUCTIONS:
 OUTPUT: Clear, structured summary of retrieved SOP policy content with source references. Do NOT provide audit opinions.`;
     },
     model: gemini({
-        model: "gemini-2.5-flash",
+        model: process.env.GEMINI_FLASH_MODEL || "gemini-2.5-flash",
         apiKey: process.env.GOOGLE_GENERATIVE_AI_API_KEY,
     }),
     tools: [vectorSearchTool, vectorSearchRRFTool],

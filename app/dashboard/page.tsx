@@ -27,12 +27,17 @@ export default function DashboardPage() {
 
     const logs: AuditLogEntry[] = data?.logs || [];
 
-    // Track when new logs arrive to stop processing
+    // Track when processing completes (latest log status is no longer 'processing')
     useEffect(() => {
         if (logs.length > 0) {
-            if (processing && logs.length > logCountRef.current) {
+            const latest = logs[0];
+            if (processing && latest.status !== "processing") {
                 setProcessing(false);
-                toast.success("Audit report ready!");
+                if (latest.status === "needs_review" && latest.tags?.includes("execution-error")) {
+                    toast.error("Agent execution encountered an error.");
+                } else {
+                    toast.success("Audit report ready!");
+                }
             }
             logCountRef.current = logs.length;
         }
@@ -75,7 +80,7 @@ export default function DashboardPage() {
 
             {/* Audit feed container with padding for floating header and footer */}
             <div className="flex-1 overflow-y-auto pt-16 relative">
-                <AuditFeed logs={logs} loading={loading} processing={processing} />
+                <AuditFeed logs={[...logs].reverse()} loading={loading} processing={processing} />
                 <div className="h-40 shrink-0 w-full" />
             </div>
 

@@ -103,7 +103,8 @@ export interface AuditLog {
     confidenceScore: number;
     // Union type: old logs are string[], new logs are AuditSource[]
     sourcesUsed: string[] | AuditSource[];
-    status: "compliant" | "non_compliant" | "needs_review";
+    status: "processing" | "compliant" | "non_compliant" | "needs_review";
+    currentStep?: string; // Live status message of current agent (e.g. "Retriever Agent searching SOP chunks...")
     tags: string[];
     escalated: boolean;
     escalatedToId?: string;

@@ -9,6 +9,7 @@ import { clientPromise } from "../lib/db";
 import { createUserProfile } from "../db/users";
 
 const SEED_PASSWORD = process.env.SEED_PASSWORD || "password123";
+const SEED_ADMIN_PASSWORD = process.env.SEED_ADMIN_PASSWORD || "admin123";
 
 interface SeedEmployee {
     name: string;
@@ -164,7 +165,7 @@ async function seed() {
                 body: {
                     name: emp.name,
                     email: emp.email,
-                    password: SEED_PASSWORD,
+                    password: emp.role === "admin" ? SEED_ADMIN_PASSWORD : SEED_PASSWORD,
                 },
                 asResponse: false
             });
@@ -209,7 +210,7 @@ async function seed() {
             });
             console.log(`  ✅ Profile linked: ${emp.name} (${emp.role})`);
         } catch (error) {
-             console.error(`  ❌ Profile failed for ${emp.name}:`, error);
+            console.error(`  ❌ Profile failed for ${emp.name}:`, error);
         }
     }
 

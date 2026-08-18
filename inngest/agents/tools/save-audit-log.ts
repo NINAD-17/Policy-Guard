@@ -114,8 +114,17 @@ export const saveAuditLogTool = createTool({
             createdAt: new Date(),
         };
 
-        const insertedId = await createAuditLog(auditLogEntry);
+        let targetId = state?.auditLogId as string | undefined;
+        if (targetId) {
+            const { updateAuditLog } = await import("@/db/audits");
+            await updateAuditLog(targetId, {
+                $set: auditLogEntry,
+                $unset: { currentStep: "" },
+            });
+        } else {
+            targetId = await createAuditLog(auditLogEntry);
+        }
 
-        return `Audit log saved successfully with ID: ${insertedId}`;
+        return `Audit log saved successfully with ID: ${targetId}`;
     },
 });

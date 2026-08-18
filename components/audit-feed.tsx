@@ -13,6 +13,7 @@ interface AuditFeedProps {
 
 export function AuditFeed({ logs, loading, processing }: AuditFeedProps) {
     const bottomRef = useRef<HTMLDivElement>(null);
+    const initialRenderRef = useRef(true);
 
     // Auto-scroll to bottom when new logs arrive without shifting window/body viewport
     useEffect(() => {
@@ -27,20 +28,23 @@ export function AuditFeed({ logs, loading, processing }: AuditFeedProps) {
                 if (hasScrollableContent && isScrollableStyle) {
                     parent.scrollTo({
                         top: parent.scrollHeight,
-                        behavior: "smooth",
+                        behavior: initialRenderRef.current ? "auto" : "smooth",
                     });
+                    if (logs.length > 0) {
+                        initialRenderRef.current = false;
+                    }
                     break;
                 }
                 parent = parent.parentElement;
             }
-        }, 100);
+        }, 50);
 
         return () => clearTimeout(timer);
     }, [logs.length, processing]);
 
     if (loading) {
         return (
-            <div className="flex-1 p-6 space-y-4">
+            <div className="flex-1 p-6 space-y-4 max-w-5xl mx-auto w-full">
                 {[1, 2].map((i) => (
                     <div key={i} className="space-y-3">
                         <div className="flex justify-end">
@@ -55,10 +59,16 @@ export function AuditFeed({ logs, loading, processing }: AuditFeedProps) {
         );
     }
 
+    const completedLogs = logs.filter((log) => log.status !== "processing");
+    const activeProcessingLog = logs.find((log) => log.status === "processing");
+    const isProcessing = !!activeProcessingLog || (processing && logs.length === 0);
+    const currentStepMessage =
+        activeProcessingLog?.currentStep || "AI agents are analyzing your submission...";
+
     return (
-        <div className="flex-1 min-h-0 overflow-y-auto">
-            <div className="p-6 space-y-8">
-                {logs.length === 0 && !processing ? (
+        <div className="w-full">
+            <div className="p-6 space-y-8 max-w-5xl mx-auto w-full">
+                {completedLogs.length === 0 && !isProcessing ? (
                     <div className="flex flex-col items-center justify-center h-[50vh] text-center">
                         <ShieldCheck className="h-16 w-16 text-muted-foreground/30 mb-4" />
                         <h3 className="text-lg font-medium text-muted-foreground">
@@ -72,23 +82,23 @@ export function AuditFeed({ logs, loading, processing }: AuditFeedProps) {
                     </div>
                 ) : (
                     <>
-                        {logs.map((log) => (
+                        {completedLogs.map((log) => (
                             <AuditCard key={log._id} log={log} />
                         ))}
                     </>
                 )}
 
-                {/* Processing indicator */}
-                {processing && (
+                {/* Live Dynamic Agent Status Indicator */}
+                {isProcessing && (
                     <div className="flex justify-start">
-                        <div className="bg-muted/30 border border-border/50 rounded-lg px-4 py-3 flex items-center gap-3">
-                            <div className="flex space-x-1">
-                                <div className="w-2 h-2 bg-primary rounded-full animate-bounce [animation-delay:0ms]" />
-                                <div className="w-2 h-2 bg-primary rounded-full animate-bounce [animation-delay:150ms]" />
-                                <div className="w-2 h-2 bg-primary rounded-full animate-bounce [animation-delay:300ms]" />
+                        <div className="bg-muted/40 border border-primary/30 rounded-xl px-5 py-3.5 flex items-center gap-3 shadow-sm backdrop-blur-sm animate-pulse">
+                            <div className="flex space-x-1.5">
+                                <div className="w-2.5 h-2.5 bg-primary rounded-full animate-bounce [animation-delay:0ms]" />
+                                <div className="w-2.5 h-2.5 bg-primary rounded-full animate-bounce [animation-delay:150ms]" />
+                                <div className="w-2.5 h-2.5 bg-primary rounded-full animate-bounce [animation-delay:300ms]" />
                             </div>
-                            <span className="text-sm text-muted-foreground">
-                                AI agents are analyzing your submission...
+                            <span className="text-sm font-medium text-primary">
+                                {currentStepMessage}
                             </span>
                         </div>
                     </div>

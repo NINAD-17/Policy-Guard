@@ -59,6 +59,7 @@ export interface AuditLogEntry {
     confidenceScore: number;
     sourcesUsed: string[] | AuditSource[];
     status: string;
+    currentStep?: string;
     tags: string[];
     escalated?: boolean;
     escalatedToName?: string;
@@ -276,10 +277,10 @@ export function AuditCard({ log }: AuditCardProps) {
                             /* ── Structured Layout ──────────────────── */
                             <div className="space-y-8">
                                 {/* Summary */}
-                                <div className="prose prose-sm prose-invert max-w-none">
-                                    <p className="text-[15px] text-foreground/90 leading-relaxed font-medium">
-                                        {report.summary}
-                                    </p>
+                                <div className="prose prose-sm prose-invert max-w-none [&_h2]:text-base [&_h2]:font-semibold [&_h2]:mt-4 [&_h2]:mb-2 [&_h3]:text-sm [&_h3]:font-semibold [&_h3]:mt-3 [&_h3]:mb-1 [&_p]:text-[15px] [&_p]:text-foreground/90 [&_p]:leading-relaxed [&_li]:text-[14px] [&_li]:text-foreground/80 [&_strong]:text-foreground [&_ul]:my-2 [&_ol]:my-2">
+                                    <ReactMarkdown>
+                                        {report.summary.replace(/\\n/g, "\n")}
+                                    </ReactMarkdown>
                                 </div>
 
                                 {/* Matched Documents for SOP Search */}
@@ -402,15 +403,25 @@ export function AuditCard({ log }: AuditCardProps) {
                                 )}
 
                                 {/* Sources */}
-                                {isStructuredSources(log.sourcesUsed) &&
-                                    log.sourcesUsed.length > 0 && (
+                                {(() => {
+                                    if (!isStructuredSources(log.sourcesUsed) || log.sourcesUsed.length === 0) return null;
+                                    const uniqueSourcesMap = new Map<string, AuditSource>();
+                                    for (const src of log.sourcesUsed) {
+                                        const key = `${src.documentId}-${src.pageNumber || 0}`;
+                                        if (!uniqueSourcesMap.has(key)) {
+                                            uniqueSourcesMap.set(key, src);
+                                        }
+                                    }
+                                    const uniqueSources = Array.from(uniqueSourcesMap.values());
+
+                                    return (
                                         <div className="pt-2">
                                             <button
                                                 onClick={() => setSourcesExpanded(!sourcesExpanded)}
                                                 className="flex items-center gap-2 text-xs font-semibold uppercase tracking-wider text-muted-foreground hover:text-foreground transition-colors bg-white/5 hover:bg-white/10 px-4 py-2 rounded-full border border-white/5"
                                             >
                                                 <FileText className="h-3.5 w-3.5" />
-                                                <span>Sources ({log.sourcesUsed.length})</span>
+                                                <span>Sources ({uniqueSources.length})</span>
                                                 {sourcesExpanded ? (
                                                     <ChevronUp className="h-3.5 w-3.5 ml-1" />
                                                 ) : (
@@ -419,7 +430,7 @@ export function AuditCard({ log }: AuditCardProps) {
                                             </button>
                                             {sourcesExpanded && (
                                                 <div className="mt-4 grid grid-cols-1 sm:grid-cols-2 gap-3">
-                                                    {log.sourcesUsed.map((source, idx) => (
+                                                    {uniqueSources.map((source, idx) => (
                                                         <button
                                                             key={idx}
                                                             onClick={() => handleOpenSource(source.documentId)}
@@ -444,7 +455,8 @@ export function AuditCard({ log }: AuditCardProps) {
                                                 </div>
                                             )}
                                         </div>
-                                    )}
+                                    );
+                                })()}
                             </div>
                         ) : (
                             /* ── Markdown Fallback (old logs) ──────── */
@@ -483,7 +495,10 @@ export function AuditCard({ log }: AuditCardProps) {
                                     </div>
                                 )}
                             </div>
-                            <span className="text-[11px] font-mono text-muted-foreground/60 uppercase tracking-widest whitespace-nowrap">
+                            <span 
+                                suppressHydrationWarning 
+                                className="text-[11px] font-mono text-muted-foreground/60 uppercase tracking-widest whitespace-nowrap"
+                            >
                                 {new Date(log.createdAt).toLocaleString()}
                             </span>
                         </div>

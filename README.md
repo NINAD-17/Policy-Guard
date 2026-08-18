@@ -71,4 +71,4 @@ erDiagram
         string escalatedToId FK "References users.id of manager"
         string escalationMessage "Drafted by LLM"
     }
-```
+```

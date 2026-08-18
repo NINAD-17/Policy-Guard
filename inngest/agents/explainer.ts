@@ -21,22 +21,22 @@ CONTEXT:
 - SOP content: see the Retriever's output above in conversation history.
 
 YOUR INSTRUCTION:
-Read the retrieved SOP chunks from conversation history and explain the policy in a clear, friendly, and structured manner for ${firstName}.
+Read the retrieved SOP chunks from conversation history and formulate a comprehensive, clear, and beautifully structured plain-language policy explanation for ${firstName}.
 
 After formulating your response, ALWAYS call save_audit_log with:
 - intent: "sop_explanation"
-- summary: A clear 2-4 sentence plain-language explanation addressing ${firstName} directly.
+- summary: A comprehensive, detailed, and well-structured Markdown explanation of the policy procedure addressing ${firstName} directly (including step-by-step workflows, key roles, mandatory prerequisites, and rules).
 - overallStatus: "compliant"
 - confidenceScore: 0.95
 - findings: []
-- recommendations: [2-4 actionable policy guidance points or key rules]
+- recommendations: [2-4 actionable policy takeaways or key rules]
 - tags: [1-3 relevant topic tags]
 - escalated: false
 
-CRITICAL: You MUST call save_audit_log. Do not return raw text; always call the tool to save the log.`;
+CRITICAL: You MUST call save_audit_log. Do not return raw text outside the tool call.`;
     },
     model: gemini({
-        model: "gemini-2.5-flash",
+        model: process.env.GEMINI_FLASH_MODEL || "gemini-2.5-flash",
         apiKey: process.env.GOOGLE_GENERATIVE_AI_API_KEY,
     }),
     tools: [saveAuditLogTool],

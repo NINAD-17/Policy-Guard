@@ -5,6 +5,8 @@ import { auditorAgent } from "./auditor";
 import { formatterAgent } from "./formatter";
 import { explainerAgent } from "./explainer";
 
+import { updateAuditLog } from "@/db/audits";
+
 // Dynamic State-Driven Compliance Network:
 // 1. Router Agent classifies intent into: chitchat, compliance_audit, sop_search, sop_explanation.
 // 2. chitchat → stop immediately (compliance-audit.ts saves friendly log).
@@ -16,11 +18,23 @@ export function createComplianceNetwork() {
         name: "compliance-audit-network",
         agents: [routerAgent, retrieverAgent, auditorAgent, formatterAgent, explainerAgent],
         maxIter: 10, // Safety buffer for multi-agent loops including re-retrieval
-        router: ({ network, lastResult, callCount }) => {
+        router: async ({ network, lastResult, callCount }) => {
             const state = network?.state.data;
+            const auditLogId = state?.auditLogId as string | undefined;
+
+            const updateStatus = async (stepMessage: string) => {
+                if (auditLogId) {
+                    try {
+                        await updateAuditLog(auditLogId, { currentStep: stepMessage });
+                    } catch (err) {
+                        console.error("Failed to update agent status in DB:", err);
+                    }
+                }
+            };
 
             // ── Call 0: Always start with the Router (classifier) ──
             if (callCount === 0) {
+                await updateStatus("🤖 Router Agent: Classifying query intent...");
                 return routerAgent;
             }
 
@@ -46,6 +60,7 @@ export function createComplianceNetwork() {
                     }
                 }
                 // All other intents (compliance_audit, sop_search, sop_explanation) require Retriever
+                await updateStatus("🔍 Retriever Agent: Searching SOP knowledge base...");
                 return retrieverAgent;
             }
 
@@ -55,9 +70,11 @@ export function createComplianceNetwork() {
             if (lastAgentName === "Retriever") {
                 const intent = state?.intent;
                 if (intent === "compliance_audit") {
+                    await updateStatus("📋 Auditor Agent: Evaluating compliance rules against SOPs...");
                     return auditorAgent;
                 }
                 if (intent === "sop_explanation") {
+                    await updateStatus("💡 Explainer Agent: Formulating policy explanation...");
                     return explainerAgent;
                 }
                 if (intent === "sop_search") {
@@ -65,6 +82,7 @@ export function createComplianceNetwork() {
                     return undefined;
                 }
                 // Default fallback
+                await updateStatus("📋 Auditor Agent: Evaluating compliance rules against SOPs...");
                 return auditorAgent;
             }
 
@@ -83,12 +101,14 @@ export function createComplianceNetwork() {
                                 state.retrieverRetryCount = retryCount + 1;
                             }
                             // Re-retrieve with RRF forced via auditor's refined query
+                            await updateStatus("🔍 Retriever Agent: Performing secondary search for missing SOP context...");
                             return retrieverAgent;
                         }
                     } catch {
                         // If JSON parse fails, fall through to Formatter
                     }
                 }
+                await updateStatus("📝 Formatter Agent: Finalizing compliance report...");
                 return formatterAgent;
             }
 

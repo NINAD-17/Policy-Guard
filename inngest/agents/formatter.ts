@@ -26,7 +26,7 @@ Pass these fields directly from the Auditor's JSON to save_audit_log:
 - summary, overallStatus, confidenceScore, findings, recommendations, tags, escalated, escalationMessage
 - set intent to "compliance_audit"`,
     model: gemini({
-        model: "gemini-2.5-flash",
+        model: process.env.GEMINI_FLASH_MODEL || "gemini-2.5-flash",
         apiKey: process.env.GOOGLE_GENERATIVE_AI_API_KEY,
     }),
     tools: [saveAuditLogTool],

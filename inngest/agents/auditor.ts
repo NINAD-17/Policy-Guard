@@ -57,7 +57,7 @@ OUTPUT — respond with ONLY valid JSON after using tools if needed (no markdown
 }`;
     },
     model: gemini({
-        model: "gemini-2.5-flash",
+        model: process.env.GEMINI_FLASH_MODEL || "gemini-2.5-flash",
         apiKey: process.env.GOOGLE_GENERATIVE_AI_API_KEY,
     }),
     tools: [getEscalationManagerTool],

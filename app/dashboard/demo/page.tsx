@@ -17,7 +17,7 @@ const DEMO_LOGS: AuditLogEntry[] = [
         confidenceScore: 1.0,
         status: "compliant",
         tags: ["chitchat"],
-        createdAt: new Date(Date.now() - 1000 * 60 * 60 * 5).toISOString(),
+        createdAt: "2026-08-17T15:24:40.000Z",
         sourcesUsed: [],
         auditReport: {
             summary: "Hello! I'm PolicyGuard, your autonomous AI compliance assistant. You can ask me to search SOP documents, explain specific company policies in plain language, or submit descriptions of your work for automated compliance auditing.",
@@ -33,7 +33,7 @@ const DEMO_LOGS: AuditLogEntry[] = [
         confidenceScore: 0.95,
         status: "compliant",
         tags: ["sop-search", "Data Retention", "Security"],
-        createdAt: new Date(Date.now() - 1000 * 60 * 60 * 4).toISOString(),
+        createdAt: "2026-08-17T16:24:40.000Z",
         sourcesUsed: [
             {
                 index: 1,
@@ -74,7 +74,7 @@ const DEMO_LOGS: AuditLogEntry[] = [
         confidenceScore: 0.96,
         status: "compliant",
         tags: ["sop-explanation", "Security", "Credentials"],
-        createdAt: new Date(Date.now() - 1000 * 60 * 60 * 3).toISOString(),
+        createdAt: "2026-08-17T17:24:40.000Z",
         sourcesUsed: [
             {
                 index: 1,
@@ -101,7 +101,7 @@ const DEMO_LOGS: AuditLogEntry[] = [
         confidenceScore: 0.95,
         status: "non_compliant",
         tags: ["Code Review", "SOP Compliance", "Engineering Process"],
-        createdAt: new Date(Date.now() - 1000 * 60 * 60 * 2).toISOString(),
+        createdAt: "2026-08-17T18:24:40.000Z",
         sourcesUsed: [
             {
                 index: 1,
@@ -146,7 +146,7 @@ const DEMO_LOGS: AuditLogEntry[] = [
         confidenceScore: 0.98,
         status: "needs_review",
         tags: ["Security Incident", "SOP Compliance", "Data Protection"],
-        createdAt: new Date(Date.now() - 1000 * 60 * 60 * 1).toISOString(),
+        createdAt: "2026-08-17T19:24:40.000Z",
         escalated: true,
         escalatedToName: "Sneha Deshmukh",
         escalationMessage: "The engineering team failed to rotate compromised API credentials within the mandatory 1-hour window and failed to report a Grade-1 security incident to the Chief Security Officer immediately. Escalated to department head Sneha Deshmukh for intervention.",

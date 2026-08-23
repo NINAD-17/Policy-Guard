@@ -98,7 +98,23 @@ export function AdminStats() {
     const { kpis, complianceDistribution, intentDistribution, departmentBreakdown, topCites, documentsSummary } = data;
 
     return (
-        <div className="space-y-8 animate-in fade-in duration-500">
+        <div className="space-y-6 sm:space-y-8 animate-in fade-in duration-500">
+            {/* Live Telemetry Status Banner */}
+            <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-2 px-4 py-3 rounded-2xl bg-emerald-500/10 border border-emerald-500/20 text-emerald-400 text-xs shadow-sm">
+                <div className="flex items-center gap-2.5">
+                    <span className="relative flex h-2.5 w-2.5 shrink-0">
+                        <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-emerald-400 opacity-75"></span>
+                        <span className="relative inline-flex rounded-full h-2.5 w-2.5 bg-emerald-500"></span>
+                    </span>
+                    <span className="font-medium text-foreground">
+                        <strong className="text-emerald-400 font-semibold">Live Telemetry:</strong> Real-time metrics aggregated directly from active MongoDB Atlas audit logs and LLM token telemetry.
+                    </span>
+                </div>
+                <span className="text-[11px] text-emerald-400/80 font-mono shrink-0 hidden md:inline-block">
+                    MongoDB Atlas &bull; Live Aggregation
+                </span>
+            </div>
+
             {/* ── 1. Top KPI Cards ─────────────────────────────────────────── */}
             <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
                 {/* Total Audits */}

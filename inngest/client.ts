@@ -1,6 +1,7 @@
 import { Inngest } from "inngest";
 
-// inngest client to send and receive events
+// Inngest client to send and receive events
 export const inngest = new Inngest({
     id: "policy-guard",
+    isDev: process.env.NODE_ENV === "development",
 });

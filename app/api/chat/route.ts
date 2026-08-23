@@ -47,11 +47,17 @@ export async function POST(request: NextRequest) {
         return NextResponse.json({
             message: "Audit query submitted, processing in background",
         });
-    } catch (error) {
+    } catch (error: unknown) {
         if (error instanceof Response) return error;
         console.error("Chat error:", error);
+        const errMsg = error instanceof Error ? error.message : "Failed to submit query";
+        const isDev = process.env.NODE_ENV === "development";
+        const errorDetail =
+            isDev && (errMsg.includes("401") || errMsg.includes("Event key") || errMsg.includes("ECONNREFUSED"))
+                ? "Inngest Dev Server is not running. Please start it with: npx inngest-cli@latest dev -u http://localhost:3000/api/inngest"
+                : "Failed to submit query. Please check Inngest connection.";
         return NextResponse.json(
-            { error: "Failed to submit query" },
+            { error: errorDetail },
             { status: 500 }
         );
     }

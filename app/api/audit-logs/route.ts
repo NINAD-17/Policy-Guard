@@ -15,20 +15,6 @@ export async function GET(request: NextRequest) {
 
         const isGuest = session.user.email === "guest@policypulse.dev";
 
-        // If guest, run self-clean for old guest logs to ensure they aren't stored long-term
-        if (isGuest) {
-            try {
-                const client = await clientPromise;
-                const db = client.db();
-                await db.collection("audit_logs").deleteMany({
-                    isGuest: true,
-                    createdAt: { $lt: new Date(Date.now() - 30 * 60 * 1000) }
-                });
-            } catch (err) {
-                console.error("Failed to clean up old guest logs:", err);
-            }
-        }
-
         const { searchParams } = new URL(request.url);
         const limit = Math.min(parseInt(searchParams.get("limit") || "20"), 50);
         const offset = parseInt(searchParams.get("offset") || "0");

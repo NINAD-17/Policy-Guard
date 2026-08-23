@@ -7,7 +7,7 @@ import { ShieldCheck, PlayCircle } from "lucide-react";
 import { toast } from "sonner";
 import type { AuditLogEntry } from "@/components/audit-card";
 
-// Hardcoded demo data showcasing all agent intents
+// Demo data showcasing all agent intents connected to real cloud document IDs
 const DEMO_LOGS: AuditLogEntry[] = [
     {
         _id: "demo-chitchat",
@@ -16,80 +16,80 @@ const DEMO_LOGS: AuditLogEntry[] = [
         intent: "chitchat",
         confidenceScore: 1.0,
         status: "compliant",
-        tags: ["chitchat"],
+        tags: ["chitchat", "AI Assistant"],
         createdAt: "2026-08-17T15:24:40.000Z",
         sourcesUsed: [],
         auditReport: {
-            summary: "Hello! I'm PolicyGuard, your autonomous AI compliance assistant. You can ask me to search SOP documents, explain specific company policies in plain language, or submit descriptions of your work for automated compliance auditing.",
+            summary: "Hello! I'm PolicyGuard, your autonomous AI compliance assistant. You can ask me to search company SOP documents, explain specific policies in plain language, or submit descriptions of your work for automated compliance auditing.",
             findings: [],
             recommendations: [],
         },
     },
     {
         _id: "demo-sop-search",
-        userQuery: "Find SOP documents related to data retention and remote access policy.",
+        userQuery: "Find SOP documents related to data retention and remote work expectations.",
         userText: "",
         intent: "sop_search",
         confidenceScore: 0.95,
         status: "compliant",
-        tags: ["sop-search", "Data Retention", "Security"],
+        tags: ["sop-search", "Data Retention", "Remote Work"],
         createdAt: "2026-08-17T16:24:40.000Z",
         sourcesUsed: [
             {
                 index: 1,
-                documentTitle: "Data Retention & Archival SOP",
-                documentId: "demo-doc-1",
+                documentTitle: "Data Backup and Retention Policy",
+                documentId: "6a8ac7deee7f7dde21feb804",
                 pageNumber: 1,
             },
             {
                 index: 2,
-                documentTitle: "Remote Work Security & Access Policy",
-                documentId: "demo-doc-2",
-                pageNumber: 3,
+                documentTitle: "Remote Work Expectations and Procedures",
+                documentId: "6a8ad091348e9332a9b38b6b",
+                pageNumber: 1,
             },
         ],
         auditReport: {
-            summary: "Found 2 relevant SOP documents matching your query on data retention and remote access guidelines.",
+            summary: "Found 2 active SOP documents matching your inquiry on company data retention guidelines and remote work procedures.",
             findings: [],
             recommendations: [],
             relatedDocuments: [
                 {
-                    documentId: "demo-doc-1",
-                    documentTitle: "Data Retention & Archival SOP",
+                    documentId: "6a8ac7deee7f7dde21feb804",
+                    documentTitle: "Data Backup and Retention Policy",
                     pageNumber: 1,
                 },
                 {
-                    documentId: "demo-doc-2",
-                    documentTitle: "Remote Work Security & Access Policy",
-                    pageNumber: 3,
+                    documentId: "6a8ad091348e9332a9b38b6b",
+                    documentTitle: "Remote Work Expectations and Procedures",
+                    pageNumber: 1,
                 },
             ],
         },
     },
     {
         _id: "demo-sop-explanation",
-        userQuery: "Can you explain our password security policy and how often we must rotate credentials?",
+        userQuery: "Can you explain our remote work expectations and home office security protocols?",
         userText: "",
         intent: "sop_explanation",
-        confidenceScore: 0.96,
+        confidenceScore: 0.97,
         status: "compliant",
-        tags: ["sop-explanation", "Security", "Credentials"],
+        tags: ["sop-explanation", "Remote Work", "Security"],
         createdAt: "2026-08-17T17:24:40.000Z",
         sourcesUsed: [
             {
                 index: 1,
-                documentTitle: "Enterprise Identity & Access Management SOP",
-                documentId: "demo-doc-3",
-                pageNumber: 4,
+                documentTitle: "Remote Work Expectations and Procedures",
+                documentId: "6a8ad091348e9332a9b38b6b",
+                pageNumber: 2,
             },
         ],
         auditReport: {
-            summary: "Our Enterprise Identity & Access Management policy requires all employee accounts to use strong passphrases combined with multi-factor authentication (MFA). Master database and cloud API keys must be rotated every 90 days or immediately upon suspected exposure.",
+            summary: "Under the Remote Work Expectations and Procedures SOP, all remote team members must maintain a secure, private home workspace. Corporate VPN usage is mandatory when accessing internal systems, and laptops must have full-disk encryption and screen lock enabled.",
             findings: [],
             recommendations: [
-                "Passwords must be at least 16 characters long and stored in an approved password manager.",
-                "MFA must be enforced via authenticator app or hardware token (SMS authentication is disallowed).",
-                "API keys and service tokens must be rotated automatically every 90 days or within 1 hour of any accidental public exposure.",
+                "Connect to the corporate WireGuard/OpenVPN tunnel prior to accessing staging or production systems.",
+                "Ensure automatic screen lock is configured with a maximum 5-minute inactivity timeout.",
+                "Maintain availability during core collaboration hours (10:00 AM – 4:00 PM local time).",
             ],
         },
     },
@@ -105,42 +105,42 @@ const DEMO_LOGS: AuditLogEntry[] = [
         sourcesUsed: [
             {
                 index: 1,
-                documentTitle: "Engineering Code Review Guidelines",
-                documentId: "dummy-id-1",
+                documentTitle: "Mandatory Engineering Code Review and Quality Control Process",
+                documentId: "6a836d57f079cd0cc2261708",
                 pageNumber: 2,
             },
             {
                 index: 2,
-                documentTitle: "Engineering Code Review Guidelines",
-                documentId: "dummy-id-1",
+                documentTitle: "Mandatory Engineering Code Review and Quality Control Process",
+                documentId: "6a836d57f079cd0cc2261708",
                 pageNumber: 3,
             },
         ],
         auditReport: {
-            summary: "Hi there, after reviewing your submitted code review process, it appears there are several areas where your approach deviates from our established Standard Operating Procedures. This report outlines these observations to help you align with the company's guidelines.",
+            summary: "After reviewing your submitted code review process, there are several critical deviations from our established Engineering Code Review and Quality Control SOP. The report outlines these findings to guide your team back into full compliance.",
             findings: [
                 {
-                    title: "Insufficient Review Depth",
-                    description: "Your statement about 'quickly scanning the code for syntax errors' indicates a narrower focus than what our SOP outlines. Code Review Guidelines require checking logic, security, and maintainability.",
+                    title: "Insufficient Review Depth & Duration",
+                    description: "A 5-minute syntax scan violates the minimum 15-minute thorough logical and security review required before approving Pull Requests.",
                     status: "non_compliant",
                     sopReferences: [1],
                 },
                 {
-                    title: "Lack of Test Verification",
-                    description: "You mentioned that you 'didn't run any tests.' The SOP expects reviewers to verify that automated test suites pass prior to approval.",
+                    title: "Lack of CI/CD Test Verification",
+                    description: "Failing to execute automated tests or confirm test suite green status violates the mandatory pre-merge verification checkpoint.",
                     status: "non_compliant",
                     sopReferences: [2],
                 },
             ],
             recommendations: [
-                "Broaden code review focus beyond syntax errors to include logic, security, style, and maintainability.",
-                "Incorporate a step to verify test coverage and ensure all automated tests pass as part of your review process.",
+                "Dedicate at least 15 minutes per review evaluating business logic, edge cases, error handling, and potential security vulnerabilities.",
+                "Ensure all automated unit, integration, and security scans pass green in the CI/CD pipeline prior to granting PR approval.",
             ],
         },
     },
     {
         _id: "demo-2",
-        userQuery: "We had a production data leak. Does our incident response follow the SOP?",
+        userQuery: "We had an API key leak on GitHub. Does our incident response follow the SOP?",
         userText: "An engineer accidentally committed an AWS secret key to a public GitHub repo. The key was active for 24 hours. We deleted the repo but didn't rotate the key immediately. We didn't inform the security officer yet because it was a weekend.",
         intent: "compliance_audit",
         confidenceScore: 0.98,
@@ -153,8 +153,8 @@ const DEMO_LOGS: AuditLogEntry[] = [
         sourcesUsed: [
             {
                 index: 1,
-                documentTitle: "Enterprise Security Incident Response Protocol",
-                documentId: "dummy-id-2",
+                documentTitle: "Security Incident Response Protocol",
+                documentId: "6a8acf5327cfc5ca7b2cdefc",
                 pageNumber: 1,
             },
         ],
@@ -162,15 +162,21 @@ const DEMO_LOGS: AuditLogEntry[] = [
             summary: "Critical compliance failure identified regarding incident response protocols. Immediate action is required to rotate compromised credentials and notify the security officer. Due to high severity, this case has been escalated.",
             findings: [
                 {
-                    title: "Delayed Credential Rotation",
-                    description: "The compromised AWS secret key was left active for 24 hours. SOP mandates credential rotation within 1 hour of breach detection.",
+                    title: "Delayed Credential Rotation (Violates 1-Hour SLA)",
+                    description: "The compromised secret key remained active for 24 hours. SOP mandates credential revocation and rotation within 60 minutes of detection.",
+                    status: "non_compliant",
+                    sopReferences: [1],
+                },
+                {
+                    title: "Unreported Security Incident",
+                    description: "Delaying reporting over a weekend violates the mandatory 15-minute Security Incident reporting SLA.",
                     status: "non_compliant",
                     sopReferences: [1],
                 },
             ],
             recommendations: [
-                "Rotate the compromised AWS secret key immediately.",
-                "Notify the Chief Security Officer (CSO) and request credential audit log analysis.",
+                "Rotate and invalidate the compromised AWS secret key immediately in the AWS IAM Console.",
+                "Notify the Chief Information Security Officer (CISO) and trigger a full AWS CloudTrail audit log review.",
             ],
         },
     },
@@ -207,7 +213,7 @@ export default function DemoPage() {
             <ChatInput
                 disabled={true}
                 showSuggestions={false}
-                placeholder="Interactive demo feed — Read-only mode"
+                placeholder="Interactive demo — Read-only mode"
             />
         </div>
     );

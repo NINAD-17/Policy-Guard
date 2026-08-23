@@ -1,0 +1,62 @@
+PULSEGUARD TECHNOLOGIES INC. - STANDARD OPERATING PROCEDURE
+================================================================================
+Document ID:     SOP-GLOBAL-003
+Title:           GLOBAL CODE OF CONDUCT, ANTI-HARASSMENT, AND ETHICS PROTOCOL
+Version:         v4.0
+Effective Date:  January 1, 2026
+Review Date:     January 1, 2027
+Department:      Global (All Departments)
+Author:          Pooja Kulkarni (Chief Human Resources Officer)
+Approver:        Board of Directors & Chief Legal Officer
+Classification:  Internal Restricted / Company-Wide Mandatory
+================================================================================
+
+1. PURPOSE & OBJECTIVE
+   PulseGuard Technologies Inc. is committed to fostering a safe, respectful, inclusive, 
+   and equitable workplace. This Standard Operating Procedure outlines the company's 
+   zero-tolerance policy toward workplace harassment, discrimination, bullying, retaliation, 
+   and unethical business practices, while providing confidential reporting channels.
+
+2. SCOPE
+   This procedure applies to all employees, contractors, executives, interns, and applicants 
+   across all global office locations, remote workspaces, company-sponsored events, 
+   virtual communication platforms (Slack, Zoom, Email), and business travel.
+
+3. PROHIBITED CONDUCT
+   3.1. Discrimination
+        - Differential treatment, denial of opportunities, or hostile actions based on race, 
+          gender, sexual orientation, disability, age, religion, or nationality.
+   3.2. Harassment & Bullying
+        - Unwelcome verbal, visual, or physical conduct creating an intimidating or offensive 
+          environment (e.g. offensive jokes, derogatory remarks, microaggressions, stalking).
+   3.3. Sexual Harassment
+        - Unwelcome sexual advances, requests for sexual favors, or conditioning employment 
+          decisions on sexual compliance (Quid Pro Quo).
+   3.4. Retaliation
+        - Any adverse action taken against an individual for reporting a concern or participating 
+          in an investigation is strictly illegal and subject to immediate termination.
+
+4. ETHICAL STANDARDS & CONFLICTS OF INTEREST
+   4.1. Financial Integrity & Gifts
+        - Employees may not accept gifts, hospitality, or favors exceeding $50 USD in value 
+          from vendors, clients, or partners without HR and Legal disclosure.
+   4.2. Outside Business Activities
+        - Side employment or consulting that competes with PulseGuard or utilizes company 
+          assets is prohibited without prior written approval from the Chief Legal Officer.
+
+5. REPORTING & INVESTIGATION PROCEDURES
+   5.1. Reporting Channels
+        - Employees can report incidents directly to their Manager, People Operations (HR), 
+          or via the 24/7 Anonymous Whistleblower Hotline (ethics@policypulse.dev).
+   5.2. Confidentiality & Non-Retaliation
+        - Reports are treated with strict confidentiality. All allegations are investigated 
+          within 5 business days by an independent HR and Legal review committee.
+   5.3. Investigation Timeline
+        - Preliminary interview within 48 hours of ticket creation.
+        - Formal findings and corrective action report finalized within 14 calendar days.
+
+6. DISCIPLINARY SANCTIONS
+   Violations of this protocol will result in progressive disciplinary action up to and 
+   including mandatory sensitivity training, formal written reprimand, role demotion, 
+   immediate termination for cause, and legal prosecution where applicable.
+================================================================================

@@ -1,0 +1,73 @@
+PULSEGUARD TECHNOLOGIES INC. - STANDARD OPERATING PROCEDURE
+================================================================================
+Document ID:     SOP-GLOBAL-002
+Title:           ACCEPTABLE USE POLICY FOR GENERATIVE AI AND THIRD-PARTY TOOLS
+Version:         v2.0
+Effective Date:  February 1, 2026
+Review Date:     February 1, 2027
+Department:      Global (All Departments)
+Author:          Dr. Ananya Ray (Head of AI Governance & Ethics)
+Approver:        Chief Technology Officer & Legal Counsel
+Classification:  Internal Restricted / Company-Wide Mandatory
+================================================================================
+
+1. PURPOSE & OBJECTIVE
+   This Standard Operating Procedure (SOP) governs the evaluation, adoption, and 
+   day-to-day utilization of Generative Artificial Intelligence (GenAI), Large 
+   Language Models (LLMs), automated coding copilots, and third-party SaaS tools 
+   across PulseGuard Technologies Inc. It establishes strict guardrails to prevent 
+   confidential data exfiltration, intellectual property infringement, and unvetted 
+   AI-generated output deployment.
+
+2. SCOPE
+   This policy applies to all employees, contractors, consultants, and teams utilizing 
+   public or private AI models (e.g. OpenAI ChatGPT, Anthropic Claude, Google Gemini, 
+   GitHub Copilot, Cursor AI, Midjourney) for engineering, copywriting, customer 
+   support, legal analysis, or data modeling.
+
+3. ROLES AND RESPONSIBILITIES
+   3.1. AI Governance Board
+        - Reviews and approves third-party AI platforms for enterprise license usage.
+        - Verifies vendor Data Processing Agreements (DPAs) ensuring zero data retention 
+          and no model training on PulseGuard inputs.
+   3.2. All Employees
+        - Must strictly verify AI outputs before merging code or sending business communication.
+        - Must never submit Customer PII, secrets, or financial data into non-enterprise models.
+   3.3. Engineering Leads
+        - Must audit all AI-suggested code during mandatory PR reviews for security vulnerabilities.
+
+4. PERMITTED AND PROHIBITED DATA CLASSIFICATIONS
+   4.1. Prohibited Inputs (Strictly Disallowed)
+        - Customer Personally Identifiable Information (PII) including names, emails, and SSNs.
+        - Proprietary source code algorithms, trade secrets, and non-public financial reports.
+        - API keys, AWS credentials, database connection strings, and encryption certificates.
+   4.2. Permitted Inputs (Approved Enterprise Accounts Only)
+        - Public documentation inquiries, generic syntax debugging, and boilerplate scaffolding.
+        - Anonymized and synthetic test datasets.
+        - General copywriting, copy editing, and internal workflow summarization.
+
+5. LICENSING AND ENTERPRISE ACCESS MANDATE
+   5.1. Free & Personal Accounts Prohibited
+        - Using personal, free-tier consumer AI accounts (where vendor terms permit training on 
+          user inputs) for company business is strictly forbidden.
+        - Employees must solely use enterprise-provisioned accounts bound by zero-retention agreements.
+   5.2. New Tool Evaluation
+        - Any team wishing to adopt a new AI tool must submit a Security & Privacy Impact 
+          Assessment (SPIA) ticket to the AI Governance Board before deployment.
+
+6. CODE ATTRIBUTION AND QUALITY VERIFICATION
+   6.1. Hallucination & Security Scanning
+        - AI-generated code is not considered self-verifying. Developers remain 100% 
+          accountable for bugs, memory leaks, and vulnerabilities introduced by AI tools.
+        - Automated SAST (Static Application Security Testing) and peer code review are mandatory.
+   6.2. Copyright and Licensing
+        - Employees must ensure code suggestions do not replicate GPL or copyleft licensed code 
+          without legal compliance.
+
+7. VIOLATION AND AUDITING
+   7.1. Regular Audits
+        - IT Security monitors outbound network egress and API tokens for unauthorized AI services.
+   7.2. Enforcement
+        - Breaches involving sensitive data leaks to unvetted AI models will trigger Level-2 
+          incident escalation and disciplinary action.
+================================================================================

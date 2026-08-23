@@ -1,0 +1,63 @@
+PULSEGUARD TECHNOLOGIES INC. - STANDARD OPERATING PROCEDURE
+================================================================================
+Document ID:     SOP-GLOBAL-004
+Title:           GLOBAL BUSINESS TRAVEL, CORPORATE CARD, AND EXPENSE REIMBURSEMENT
+Version:         v3.0
+Effective Date:  January 15, 2026
+Review Date:     January 15, 2027
+Department:      Global (All Departments)
+Author:          Aditi Sharma (Chief Financial Officer)
+Approver:        Finance Executive Committee
+Classification:  Internal Restricted / Company-Wide Mandatory
+================================================================================
+
+1. PURPOSE & OBJECTIVE
+   This Standard Operating Procedure (SOP) governs all company-funded business travel, 
+   client entertainment, home office hardware stipends, and corporate expense 
+   reimbursements. It ensures transparent fiscal management, tax compliance, and fair 
+   allocation of company resources across PulseGuard Technologies Inc.
+
+2. SCOPE
+   This policy applies to all global full-time employees, managers, and contractors 
+   incurring authorized business expenses on behalf of PulseGuard.
+
+3. PRE-APPROVAL REQUIREMENTS
+   3.1. Domestic Travel
+        - Must be approved in writing by the direct Department Manager at least 7 days 
+          prior to booking.
+   3.2. International Travel
+        - Requires approval from the Department VP and Chief Financial Officer (CFO) 
+          at least 21 days prior to departure.
+
+4. EXPENSE CATEGORIES & LIMITS
+   4.1. Airfare & Rail
+        - Standard Economy / Coach class is required for all flights under 6 hours duration.
+        - Premium Economy / Business class is permitted only for international flights exceeding 
+          8 hours with prior VP approval.
+   4.2. Lodging & Hotel
+        - Maximum reimbursable room rate is $220 USD/night (Tier 1 cities like NYC, London, SF 
+          cap at $300 USD/night).
+   4.3. Daily Meals & Per Diem
+        - Daily meal allowance (breakfast, lunch, dinner) is capped at $75 USD/day per employee.
+        - Alcohol is reimbursable only during approved client business dinners with itemized receipts.
+   4.4. Home Office & Productivity Stipend
+        - Remote employees are entitled to a one-time $500 USD workstation setup stipend and 
+          a $60 USD/month recurring internet/utility allowance.
+
+5. SUBMISSION & REIMBURSEMENT TIMELINE
+   5.1. Itemized Receipts Required
+        - Credit card slips showing only total amounts are not acceptable. Legible, itemized 
+          receipts showing date, vendor name, individual items, and taxes are mandatory.
+   5.2. Submission Deadline
+        - Expense reports must be submitted via the company Expense Portal (Navan / Expensify) 
+          within 30 calendar days of incurring the expense.
+        - Late submissions beyond 60 days will be permanently denied.
+   5.3. Payment Cycle
+        - Approved reports are processed in the following bi-weekly payroll direct deposit cycle.
+
+6. NON-REIMBURSABLE EXPENSES
+   The following expenses are strictly personal and non-reimbursable:
+   - Traffic or parking fines, airline seat upgrade fees for personal preference.
+   - Hotel in-room mini-bar, pay-per-view movies, or personal grooming items.
+   - Expenses for spouses, family members, or personal travel extensions.
+================================================================================

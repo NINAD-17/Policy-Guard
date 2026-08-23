@@ -15,9 +15,10 @@ interface ChatInputProps {
 
 const SUGGESTED_QUERIES = [
     "Explain the process of engineering code review and quality control process",
-    "Does my code review follow SOP if I approved a PR in 5 mins without running tests?",
-    "An API secret was pushed to GitHub and repo deleted but key not rotated. Is this okay?",
-    "I spent 20 mins reviewing PR logic, verified tests passed, no secrets. Is this compliant?",
+    "What are the rules for accessing production customer data and PII under our data privacy policy?",
+    "What is the mandatory procedure and timeframe for reporting a security incident or credential leak?",
+    "What are the core hours and home office security requirements under our remote work policy?",
+    "How long are customer database backups and transaction logs retained under our backup policy?",
 ];
 
 export function ChatInput({

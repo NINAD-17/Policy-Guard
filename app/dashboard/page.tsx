@@ -14,6 +14,8 @@ const fetcher = (url: string) => fetch(url).then((res) => {
 
 export default function DashboardPage() {
     const [processing, setProcessing] = useState(false);
+    const [isAtBottom, setIsAtBottom] = useState(true);
+    const scrollContainerRef = useRef<HTMLDivElement>(null);
     const logCountRef = useRef(0);
 
     const { data, isLoading: loading, error } = useSWR(
@@ -26,6 +28,24 @@ export default function DashboardPage() {
     );
 
     const logs: AuditLogEntry[] = data?.logs || [];
+
+    // Scroll listener for inner container
+    const handleScroll = () => {
+        if (!scrollContainerRef.current) return;
+        const { scrollTop, scrollHeight, clientHeight } = scrollContainerRef.current;
+        const atBottom = scrollHeight - scrollTop - clientHeight <= 80;
+        setIsAtBottom(atBottom);
+    };
+
+    // Scroll listener for window (mobile)
+    useEffect(() => {
+        const handleWinScroll = () => {
+            const atBottom = window.innerHeight + window.scrollY >= document.documentElement.scrollHeight - 80;
+            setIsAtBottom(atBottom);
+        };
+        window.addEventListener("scroll", handleWinScroll, { passive: true });
+        return () => window.removeEventListener("scroll", handleWinScroll);
+    }, []);
 
     // Track when processing completes (latest log status is no longer 'processing')
     useEffect(() => {
@@ -75,17 +95,18 @@ export default function DashboardPage() {
 
     return (
         <div className="flex-1 flex flex-col w-full h-full relative">
-            {/* Floating Header */}
-
-
             {/* Audit feed container with padding for floating header and footer */}
-            <div className="flex-1 overflow-y-auto pt-16 relative">
+            <div
+                ref={scrollContainerRef}
+                onScroll={handleScroll}
+                className="flex-1 overflow-y-auto pt-16 relative"
+            >
                 <AuditFeed logs={[...logs].reverse()} loading={loading} processing={processing} />
                 <div className="h-40 shrink-0 w-full" />
             </div>
 
             {/* Floating Chat input */}
-            <ChatInput onSubmit={handleSubmit} loading={processing} />
+            <ChatInput onSubmit={handleSubmit} loading={processing} showSuggestions={isAtBottom} />
         </div>
     );
 }

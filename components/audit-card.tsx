@@ -174,16 +174,22 @@ export function AuditCard({ log }: AuditCardProps) {
             return;
         }
 
+        const toastId = toast.loading("Opening document PDF...");
         try {
             const res = await fetch(`/api/documents/${docId}/url`);
-            if (!res.ok) throw new Error();
+            if (!res.ok) {
+                const data = await res.json().catch(() => ({}));
+                throw new Error(data.error || "Document not found");
+            }
             const { url } = await res.json();
 
             // Cache the URL
             setUrlCache((prev) => ({ ...prev, [docId]: url }));
+            toast.dismiss(toastId);
             window.open(url, "_blank");
-        } catch {
-            toast.error("Failed to open document");
+        } catch (err: unknown) {
+            const msg = err instanceof Error ? err.message : "Failed to open document";
+            toast.error(msg, { id: toastId });
         }
     };
 
@@ -333,13 +339,13 @@ export function AuditCard({ log }: AuditCardProps) {
                                             {report.findings.map((finding, i) => (
                                                 <div
                                                     key={i}
-                                                    className={`relative rounded-[1.5rem] p-5 transition-all duration-300 hover:-translate-y-0.5 border backdrop-blur-md shadow-sm ${finding.status === "compliant"
-                                                            ? "bg-emerald-950/20 border-emerald-500/10 hover:border-emerald-500/20 hover:shadow-[0_8px_30px_rgba(16,185,129,0.1)]"
-                                                            : "bg-red-950/20 border-red-500/10 hover:border-red-500/20 hover:shadow-[0_8px_30px_rgba(239,68,68,0.1)]"
+                                                    className={`relative isolate rounded-[1.5rem] p-5 transition-all duration-300 hover:-translate-y-0.5 border shadow-sm ${finding.status === "compliant"
+                                                            ? "bg-emerald-950/30 border-emerald-500/20 hover:border-emerald-500/30 hover:shadow-[0_8px_30px_rgba(16,185,129,0.15)]"
+                                                            : "bg-red-950/30 border-red-500/20 hover:border-red-500/30 hover:shadow-[0_8px_30px_rgba(239,68,68,0.15)]"
                                                         }`}
                                                 >
                                                     <div className="flex items-start gap-4">
-                                                        <div className={`mt-0.5 p-2 rounded-xl shrink-0 ${finding.status === "compliant" ? "bg-emerald-500/10 text-emerald-500" : "bg-red-500/10 text-red-500"}`}>
+                                                        <div className={`mt-0.5 p-2 rounded-xl shrink-0 ${finding.status === "compliant" ? "bg-emerald-500/10 text-emerald-400" : "bg-red-500/10 text-red-400"}`}>
                                                             {finding.status === "compliant" ? (
                                                                 <CheckCircle2 className="h-5 w-5 drop-shadow-md" />
                                                             ) : (
@@ -348,7 +354,7 @@ export function AuditCard({ log }: AuditCardProps) {
                                                         </div>
                                                         <div className="flex-1 min-w-0">
                                                             <div className="flex items-center justify-between gap-2 flex-wrap mb-2">
-                                                                <span className="text-base font-semibold tracking-tight text-foreground/90">
+                                                                <span className="text-base font-semibold tracking-tight text-foreground">
                                                                     {finding.title}
                                                                 </span>
                                                                 {/* Inline source badges */}
@@ -356,7 +362,7 @@ export function AuditCard({ log }: AuditCardProps) {
                                                                     {finding.sopReferences.map((ref) => (
                                                                         <span
                                                                             key={ref}
-                                                                            className="inline-flex items-center justify-center h-6 px-2 rounded-full bg-black/40 border border-white/5 shadow-inner text-[10px] font-mono font-medium text-muted-foreground"
+                                                                            className="inline-flex items-center justify-center h-6 px-2 rounded-full bg-black/50 border border-white/10 shadow-inner text-[10px] font-mono font-semibold text-muted-foreground"
                                                                             title={`Reference SOP ${ref}`}
                                                                         >
                                                                             SOP-{ref}

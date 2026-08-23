@@ -1,12 +1,19 @@
 "use client";
 
-import { useState, useEffect, useCallback } from "react";
+import { useState, useEffect } from "react";
 import { useSession } from "@/lib/auth-client";
 import { UploadForm } from "@/components/upload-form";
 import { DocumentTable } from "@/components/document-table";
 import { AdminStats } from "@/components/admin-stats";
 import { Library, BarChart3, Sparkles } from "lucide-react";
 import { cn } from "@/lib/utils";
+import useSWR from "swr";
+
+const fetcher = (url: string) =>
+    fetch(url).then((res) => {
+        if (!res.ok) throw new Error("Failed to fetch");
+        return res.json();
+    });
 
 interface Document {
     _id: string;
@@ -23,8 +30,20 @@ export default function AdminPage() {
     const isGuest = session?.user?.email === "guest@policypulse.dev";
 
     const [activeTab, setActiveTab] = useState<"documents" | "stats">("documents");
-    const [documents, setDocuments] = useState<Document[]>([]);
-    const [loading, setLoading] = useState(true);
+
+    // SWR fetch with smart polling when any document is processing
+    const {
+        data: documents = [],
+        isLoading: loading,
+        mutate: fetchDocuments,
+    } = useSWR<Document[]>("/api/documents", fetcher, {
+        revalidateOnFocus: true,
+        keepPreviousData: true,
+        refreshInterval: (latestData) => {
+            const hasProcessing = latestData?.some((doc) => doc.status === "processing");
+            return hasProcessing ? 5000 : 0;
+        },
+    });
 
     // Default guest users to the Analytics & Tokens tab
     useEffect(() => {
@@ -33,42 +52,8 @@ export default function AdminPage() {
         }
     }, [isGuest]);
 
-    const fetchDocuments = useCallback(async () => {
-        try {
-            const res = await fetch("/api/documents");
-            if (res.ok) {
-                const data = await res.json();
-                setDocuments(data);
-            }
-        } catch (error) {
-            console.error("Failed to fetch documents:", error);
-        } finally {
-            setLoading(false);
-        }
-    }, []);
-
-    useEffect(() => {
-        fetchDocuments();
-    }, [fetchDocuments]);
-
-    // Smart polling: poll every 5 seconds only when any document has status === "processing"
-    useEffect(() => {
-        const hasProcessing = documents.some((doc) => doc.status === "processing");
-        let interval: NodeJS.Timeout | null = null;
-
-        if (hasProcessing) {
-            interval = setInterval(() => {
-                fetchDocuments();
-            }, 5000);
-        }
-
-        return () => {
-            if (interval) clearInterval(interval);
-        };
-    }, [documents, fetchDocuments]);
-
     return (
-        <div className="space-y-8 max-w-5xl mx-auto pt-12 lg:pt-0">
+        <div className="space-y-6 sm:space-y-8 max-w-5xl mx-auto pt-16 lg:pt-0">
             {/* Guest Demo Alert Banner */}
             {isGuest && (
                 <div className="p-4 rounded-2xl bg-amber-500/10 border border-amber-500/20 text-amber-400 text-xs flex items-center justify-between gap-3 animate-in fade-in duration-300">
@@ -82,8 +67,8 @@ export default function AdminPage() {
             )}
 
             {/* Header + Tabs */}
-            <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 border-b border-white/10 pb-6">
-                <div>
+            <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 border-b border-white/10 pb-5 sm:pb-6">
+                <div className="hidden sm:block">
                     <h2 className="text-2xl sm:text-3xl font-extrabold tracking-tight bg-gradient-to-br from-foreground to-foreground/60 bg-clip-text text-transparent">
                         {isGuest ? "Admin Analytics Demo" : "Admin Controls"}
                     </h2>
@@ -94,12 +79,12 @@ export default function AdminPage() {
                     </p>
                 </div>
 
-                {/* Tab Switcher */}
-                <div className="flex items-center gap-1.5 bg-black/30 p-1.5 rounded-2xl border border-white/10 shrink-0 self-start sm:self-auto">
+                {/* Tab Switcher - Centered on Mobile */}
+                <div className="flex items-center justify-center gap-1.5 bg-black/30 p-1.5 rounded-2xl border border-white/10 shrink-0 mx-auto sm:mx-0 w-full sm:w-auto">
                     <button
                         onClick={() => setActiveTab("documents")}
                         className={cn(
-                            "flex items-center gap-2 px-4 py-2 rounded-xl text-xs font-semibold transition-all duration-300 cursor-pointer",
+                            "flex-1 sm:flex-initial justify-center flex items-center gap-2 px-4 py-2.5 sm:py-2 rounded-xl text-xs font-semibold transition-all duration-300 cursor-pointer",
                             activeTab === "documents"
                                 ? "bg-primary text-primary-foreground shadow-md shadow-primary/20"
                                 : "text-muted-foreground hover:text-foreground hover:bg-white/5"
@@ -111,7 +96,7 @@ export default function AdminPage() {
                     <button
                         onClick={() => setActiveTab("stats")}
                         className={cn(
-                            "flex items-center gap-2 px-4 py-2 rounded-xl text-xs font-semibold transition-all duration-300 cursor-pointer",
+                            "flex-1 sm:flex-initial justify-center flex items-center gap-2 px-4 py-2.5 sm:py-2 rounded-xl text-xs font-semibold transition-all duration-300 cursor-pointer",
                             activeTab === "stats"
                                 ? "bg-primary text-primary-foreground shadow-md shadow-primary/20"
                                 : "text-muted-foreground hover:text-foreground hover:bg-white/5"

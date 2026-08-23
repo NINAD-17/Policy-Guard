@@ -197,14 +197,18 @@ export default function DemoPage() {
                 <span className="ml-2 text-xs bg-primary/20 text-primary px-2 py-0.5 rounded-full font-medium">Read-only</span>
             </div> */}
 
-            {/* Audit feed container */}
+            {/* Audit feed container with padding for floating header and footer */}
             <div className="flex-1 overflow-y-auto pt-16 relative">
                 <AuditFeed logs={DEMO_LOGS} loading={false} processing={processing} />
                 <div className="h-40 shrink-0 w-full" />
             </div>
 
-            {/* Floating Chat input */}
-            <ChatInput onSubmit={handleSubmit} loading={processing} />
+            {/* Floating Chat input in read-only / disabled demo mode */}
+            <ChatInput
+                disabled={true}
+                showSuggestions={false}
+                placeholder="Interactive demo feed — Read-only mode"
+            />
         </div>
     );
 }

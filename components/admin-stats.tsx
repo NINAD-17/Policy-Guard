@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useEffect } from "react";
+import useSWR from "swr";
 import { Skeleton } from "@/components/ui/skeleton";
 import { Badge } from "@/components/ui/badge";
 import {
@@ -53,28 +53,24 @@ interface StatsData {
     };
 }
 
+const fetcher = (url: string) =>
+    fetch(url).then((res) => {
+        if (!res.ok) throw new Error("Failed to fetch");
+        return res.json();
+    });
+
 export function AdminStats() {
-    const [data, setData] = useState<StatsData | null>(null);
-    const [loading, setLoading] = useState(true);
+    const {
+        data,
+        isLoading: loading,
+        error,
+    } = useSWR<StatsData>("/api/admin/stats", fetcher, {
+        revalidateOnFocus: true,
+        keepPreviousData: true,
+        dedupingInterval: 10000,
+    });
 
-    useEffect(() => {
-        async function fetchStats() {
-            try {
-                const res = await fetch("/api/admin/stats");
-                if (res.ok) {
-                    const json = await res.json();
-                    setData(json);
-                }
-            } catch (err) {
-                console.error("Failed to fetch admin stats:", err);
-            } finally {
-                setLoading(false);
-            }
-        }
-        fetchStats();
-    }, []);
-
-    if (loading) {
+    if (loading && !data) {
         return (
             <div className="space-y-6">
                 <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">

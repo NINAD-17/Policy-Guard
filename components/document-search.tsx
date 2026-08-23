@@ -67,19 +67,25 @@ export function DocumentSearch() {
     }, []);
 
     const handleViewPDF = async (docId: string) => {
+        const toastId = toast.loading("Opening document PDF...");
         try {
             const res = await fetch(`/api/documents/${docId}/url`);
-            if (!res.ok) throw new Error();
+            if (!res.ok) {
+                const data = await res.json().catch(() => ({}));
+                throw new Error(data.error || "Document not found");
+            }
             const { url } = await res.json();
+            toast.dismiss(toastId);
             window.open(url, "_blank");
             setIsOpen(false);
-        } catch {
-            toast.error("Failed to open document");
+        } catch (err: unknown) {
+            const msg = err instanceof Error ? err.message : "Failed to open document";
+            toast.error(msg, { id: toastId });
         }
     };
 
     return (
-        <div className="absolute bottom-6 left-0 right-0 mx-auto w-full max-w-3xl px-4 z-30" ref={searchRef}>
+        <div className="fixed bottom-4 sm:bottom-6 left-0 lg:left-72 right-0 mx-auto w-full max-w-3xl px-4 z-30" ref={searchRef}>
             {/* Search Results Dropup */}
             {isOpen && (query.trim().length > 0) && (
                 <div className="absolute bottom-full left-4 right-4 mb-3 bg-card/95 backdrop-blur-2xl border-2 border-white/25 shadow-[0_20px_50px_-8px_rgba(0,0,0,0.9)] rounded-[1.75rem] p-2 animate-in fade-in slide-in-from-bottom-4 duration-300 overflow-hidden max-h-[60vh] flex flex-col">

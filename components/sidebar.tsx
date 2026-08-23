@@ -140,6 +140,22 @@ export function Sidebar() {
         </div>
     );
 
+    // Dynamic page title & icon for mobile center pill
+    const getMobilePageInfo = () => {
+        if (pathname === "/dashboard") return { title: "SOP Chat", icon: MessageSquare };
+        if (pathname === "/dashboard/demo") return { title: "Demo Chat", icon: PlayCircle };
+        if (pathname === "/dashboard/documents") return { title: "SOP Documents", icon: Library };
+        if (pathname.startsWith("/admin")) {
+            return {
+                title: profile?.role === "admin" ? "Admin Controls" : "Admin Analytics",
+                icon: Settings,
+            };
+        }
+        return { title: "PolicyGuard", icon: ShieldCheck };
+    };
+
+    const mobilePageInfo = getMobilePageInfo();
+
     return (
         <>
             {/* Mobile Toggle */}
@@ -151,6 +167,12 @@ export function Sidebar() {
             >
                 {mobileOpen ? <X className="h-6 w-6" /> : <Menu className="h-6 w-6" />}
             </Button>
+
+            {/* Mobile Center Page Title Pill */}
+            <div className="lg:hidden fixed top-4 left-1/2 -translate-x-1/2 z-40 h-12 px-5 rounded-full bg-white/15 backdrop-blur-xl border border-white/20 text-foreground font-semibold text-xs sm:text-sm shadow-[0_8px_32px_rgba(0,0,0,0.6),0_0_20px_rgba(var(--primary),0.2)] flex items-center justify-center gap-2 select-none pointer-events-none">
+                <mobilePageInfo.icon className="h-4 w-4 text-primary shrink-0" />
+                <span className="truncate max-w-[160px] tracking-wide">{mobilePageInfo.title}</span>
+            </div>
 
             {/* Desktop Sidebar */}
             <div className="hidden lg:block h-dvh shrink-0 relative z-10">

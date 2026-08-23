@@ -34,13 +34,19 @@ export default function DocumentsPage() {
     const documents = allDocuments.filter((d) => d.status === "active");
 
     const handleViewPDF = async (docId: string) => {
+        const toastId = toast.loading("Opening document PDF...");
         try {
             const res = await fetch(`/api/documents/${docId}/url`);
-            if (!res.ok) throw new Error();
+            if (!res.ok) {
+                const data = await res.json().catch(() => ({}));
+                throw new Error(data.error || "Document not found");
+            }
             const { url } = await res.json();
+            toast.dismiss(toastId);
             window.open(url, "_blank");
-        } catch {
-            toast.error("Failed to open document");
+        } catch (err: unknown) {
+            const msg = err instanceof Error ? err.message : "Failed to open document";
+            toast.error(msg, { id: toastId });
         }
     };
 

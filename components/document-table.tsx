@@ -99,18 +99,19 @@ export function DocumentTable({
 
     return (
         <>
-            <Card className="glass-panel bg-card/45 backdrop-blur-xl border-white/10 shadow-[0_12px_40px_-10px_rgba(0,0,0,0.5)] rounded-[2rem] p-4 md:p-6 mt-6 transition-all duration-300 w-full max-w-full overflow-hidden">
-                <CardHeader className="pb-4 px-0 sm:px-6">
-                    <CardTitle className="flex items-center gap-2 text-xl font-bold tracking-tight">
+            <div className="glass-panel bg-card/45 backdrop-blur-xl border border-white/10 shadow-[0_12px_40px_-10px_rgba(0,0,0,0.5)] rounded-[2rem] p-6 sm:p-8 mt-6 transition-all duration-300 w-full max-w-full overflow-hidden space-y-6">
+                <div className="space-y-1.5 pb-2 border-b border-white/5">
+                    <h3 className="flex items-center gap-2 text-xl font-bold tracking-tight text-foreground">
                         <FileText className="h-5 w-5 text-primary" />
                         SOP Documents
-                    </CardTitle>
-                    <CardDescription className="text-muted-foreground/80">
+                    </h3>
+                    <p className="text-sm text-muted-foreground/80">
                         {documents.length} document
                         {documents.length !== 1 ? "s" : ""} uploaded
-                    </CardDescription>
-                </CardHeader>
-                <CardContent className="px-0 sm:px-6">
+                    </p>
+                </div>
+
+                <div>
                     {loading ? (
                         <div className="space-y-3">
                             {[1, 2, 3].map((i) => (
@@ -173,8 +174,8 @@ export function DocumentTable({
                             ))}
                         </div>
                     )}
-                </CardContent>
-            </Card>
+                </div>
+            </div>
 
             {/* Delete confirmation dialog */}
             <Dialog

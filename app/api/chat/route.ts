@@ -3,6 +3,7 @@ import { requireSession } from "@/lib/session";
 import { chatInputSchema } from "@/lib/types";
 import { inngest } from "@/inngest/client";
 import { getUserProfile } from "@/db/users";
+import { checkRateLimit, getClientIp } from "@/lib/rate-limiter";
 
 // POST /api/chat — submit a compliance audit query
 // Triggers the Inngest compliance-audit function
@@ -13,6 +14,25 @@ export async function POST(request: NextRequest) {
         const profile = await getUserProfile(session.user.id);
         if (!profile) {
             return NextResponse.json({ error: "User profile not found" }, { status: 404 });
+        }
+
+        const isGuest = session.user.email === "guest@policypulse.dev";
+
+        // Enforce 10-query rate limit for guest users (per IP and per session)
+        if (isGuest) {
+            const clientIp = getClientIp(request);
+            const ipLimit = checkRateLimit(`guest:ip:${clientIp}`, 10, 60 * 60 * 1000);
+            const sessionLimit = checkRateLimit(`guest:session:${session.session.id}`, 10, 60 * 60 * 1000);
+
+            if (!ipLimit.allowed || !sessionLimit.allowed) {
+                const resetMins = Math.min(ipLimit.resetMinutes, sessionLimit.resetMinutes);
+                return NextResponse.json(
+                    {
+                        error: `Guest demo query limit reached (10/10 queries used). Limit resets in ${resetMins} minute${resetMins > 1 ? "s" : ""}. Thank you for testing PolicyGuard!`,
+                    },
+                    { status: 429 }
+                );
+            }
         }
 
         const body = await request.json();
@@ -40,7 +60,7 @@ export async function POST(request: NextRequest) {
                 query,
                 text,
                 sessionId: session.session.id,
-                isGuest: session.user.email === "guest@policypulse.dev",
+                isGuest,
             },
         });
 

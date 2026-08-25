@@ -129,7 +129,7 @@ function HomeContent() {
                     ) : (
                         <button
                             onClick={() => setShowModal(true)}
-                            className="group relative inline-flex h-12 items-center justify-center overflow-hidden rounded-full bg-primary px-8 font-medium text-primary-foreground transition-all duration-300 hover:scale-105 hover:shadow-[0_0_40px_-10px_rgba(var(--primary),0.5)]"
+                            className="group relative inline-flex h-12 items-center justify-center overflow-hidden rounded-full bg-primary px-8 font-medium text-primary-foreground transition-all duration-300 hover:scale-105 hover:shadow-[0_0_40px_-10px_rgba(var(--primary),0.5)] cursor-pointer"
                         >
                             <span>Enter Prototype</span>
                             <ArrowRight className="ml-2 h-4 w-4 transition-transform group-hover:translate-x-1" />
@@ -149,7 +149,7 @@ function HomeContent() {
                     <div className="glass-panel bg-background/10 w-full max-w-md rounded-3xl p-6 md:p-8 relative shadow-[0_0_100px_rgba(var(--primary),0.2)] border-white/20 animate-in zoom-in-95 duration-300">
                         <button 
                             onClick={() => setShowModal(false)}
-                            className="absolute top-4 right-4 p-2 rounded-full hover:bg-white/10 text-muted-foreground hover:text-foreground transition-colors"
+                            className="absolute top-4 right-4 p-2 rounded-full hover:bg-white/10 text-muted-foreground hover:text-foreground transition-colors cursor-pointer"
                         >
                             <X className="h-5 w-5" />
                         </button>
@@ -193,7 +193,7 @@ function HomeContent() {
 
                             <Button
                                 type="submit"
-                                className="w-full h-12 rounded-xl bg-primary text-primary-foreground hover:bg-primary/90 font-medium mt-2"
+                                className="w-full h-12 rounded-xl bg-primary text-primary-foreground hover:bg-primary/90 font-medium mt-2 cursor-pointer"
                                 disabled={loading}
                             >
                                 {loading ? <Loader2 className="mr-2 h-4 w-4 animate-spin" /> : "Sign in"}
@@ -213,7 +213,7 @@ function HomeContent() {
                             <Button
                                 type="button"
                                 variant="outline"
-                                className="w-full h-12 rounded-xl border-white/10 hover:bg-white/5 font-medium"
+                                className="w-full h-12 rounded-xl border-white/10 hover:bg-white/5 font-medium cursor-pointer"
                                 onClick={handleGuestLogin}
                                 disabled={loading}
                             >

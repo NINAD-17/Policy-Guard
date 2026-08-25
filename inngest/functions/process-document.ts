@@ -32,6 +32,7 @@ export const processDocument = inngest.createFunction(
     {
         id: "process-document",
         retries: 10,
+        concurrency: 2,
     },
     { event: "sop/document.uploaded" },
     async ({ event, step }) => {

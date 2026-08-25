@@ -4,11 +4,18 @@ import { createState } from "@inngest/agent-kit";
 import { createAuditLog, updateAuditLog } from "@/db/audits";
 
 // Inngest function triggered by POST /api/chat
-// Runs the compliance audit agent network
+// Runs the compliance audit agent network with concurrency & burst throttling
 export const complianceAudit = inngest.createFunction(
     {
         id: "compliance-audit",
         retries: 1,
+        // Max 5 concurrent multi-agent executions in parallel to avoid Gemini 429 rate limit spikes
+        concurrency: 5,
+        // Throttle burst submissions to 25 per minute across the platform
+        throttle: {
+            limit: 25,
+            period: "1m",
+        },
     },
     { event: "audit/query.submitted" },
     async ({ event, step }) => {

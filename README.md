@@ -5,6 +5,49 @@
 
 ---
 
+## 📱 Mobile UI Preview & Screenshots
+
+<div align="center">
+  <table>
+    <tr>
+      <td align="center" width="33%">
+        <img src="public/readme_images/landing.jpg" width="240" alt="Landing Page" />
+        <br />
+        <sub><b>1. Landing Page & Guest Login</b></sub>
+      </td>
+      <td align="center" width="33%">
+        <img src="public/readme_images/sop_chat_plain.jpg" width="240" alt="SOP Chat Feed" />
+        <br />
+        <sub><b>2. SOP Chat & Prompt Chips</b></sub>
+      </td>
+      <td align="center" width="33%">
+        <img src="public/readme_images/sop_chat_with_response.jpg" width="240" alt="AI Compliance Audit Report" />
+        <br />
+        <sub><b>3. AI Audit & Page Citations</b></sub>
+      </td>
+    </tr>
+    <tr>
+      <td align="center" width="33%">
+        <img src="public/readme_images/sop_doc.jpg" width="240" alt="SOP Document Library" />
+        <br />
+        <sub><b>4. SOP Document Library</b></sub>
+      </td>
+      <td align="center" width="33%">
+        <img src="public/readme_images/sop_doc_search_open.jpg" width="240" alt="Floating Document Search" />
+        <br />
+        <sub><b>5. Floating Vector Search</b></sub>
+      </td>
+      <td align="center" width="33%">
+        <img src="public/readme_images/admin_panel.jpg" width="240" alt="Admin Analytics & Telemetry" />
+        <br />
+        <sub><b>6. Admin Token Telemetry</b></sub>
+      </td>
+    </tr>
+  </table>
+</div>
+
+---
+
 ## 🌟 The Problem & Solution Overview
 
 ### The Real-World Challenge
